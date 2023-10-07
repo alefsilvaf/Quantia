@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:projeto_tcc/screens/splash_screen.dart';
-import 'package:sqflite/sqflite.dart';
 import 'database/database_helper.dart';
 
 Future<void> main() async {
