@@ -3,7 +3,7 @@ import 'database_utils.dart';
 
 class UserDatabase {
   static final UserDatabase instance = UserDatabase._privateConstructor();
-  static final String tableName = 'users';
+  static const String tableName = 'users';
 
   UserDatabase._privateConstructor();
 
@@ -47,5 +47,26 @@ class UserDatabase {
   Future<int> deleteUser(int id) async {
     final db = await DatabaseHelper.instance.database;
     return await db.delete(tableName, where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<bool> login(String email, String senha) async {
+    final db = await DatabaseHelper.instance.database;
+
+    // Verifique se há um usuário com o email fornecido
+    final users =
+        await db.query(tableName, where: 'email = ?', whereArgs: [email]);
+
+    if (users.isNotEmpty) {
+      final user = users.first;
+      final storedSenha =
+          user['password']; // Obtenha a senha armazenada no banco de dados
+
+      // Verifique se a senha fornecida corresponde à senha armazenada
+      if (storedSenha == senha) {
+        return true; // Autenticação bem-sucedida
+      }
+    }
+
+    return false; // Autenticação falhou
   }
 }

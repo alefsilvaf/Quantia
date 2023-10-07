@@ -1,4 +1,5 @@
-// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, use_build_context_synchronously, use_key_in_widget_constructors, library_private_types_in_public_api, unnecessary_null_comparison
+
 import 'package:flutter/material.dart';
 import '../database/user_database.dart';
 import 'controle_geral_screen.dart';
@@ -22,60 +23,59 @@ class _CadastroScreenState extends State<CadastroScreen> {
       appBar: AppBar(
         title: Text('Cadastro de Conta'),
       ),
-      body: Center(
-        child: Padding(
-          padding:
-              EdgeInsets.symmetric(horizontal: 42.0), // Espaçamento interno
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                'Crie sua conta',
-                style: TextStyle(fontSize: 24),
-              ),
-              SizedBox(
-                  height: 16), // Espaço entre o texto e os campos de entrada
-              TextField(
-                controller: _nomeController,
-                decoration: InputDecoration(
-                  labelText: 'Nome',
+      body: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 42.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  'Crie sua conta',
+                  style: TextStyle(fontSize: 24),
                 ),
-              ),
-              SizedBox(height: 16), // Espaço entre os campos de entrada
-              TextField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  errorText: _emailErrorText,
+                SizedBox(height: 16),
+                TextField(
+                  controller: _nomeController,
+                  decoration: InputDecoration(
+                    labelText: 'Nome',
+                  ),
                 ),
-              ),
-              SizedBox(height: 16), // Espaço entre os campos de entrada
-              TextField(
-                controller: _senhaController,
-                obscureText: true, // Para ocultar a senha
-                decoration: InputDecoration(
-                  labelText: 'Senha',
-                  errorText: _senhaErrorText,
+                SizedBox(height: 16),
+                TextField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    errorText: _emailErrorText,
+                  ),
                 ),
-              ),
-              SizedBox(height: 16), // Espaço entre os campos de entrada
-              TextField(
-                controller: _repetirSenhaController,
-                obscureText: true, // Para ocultar a senha
-                decoration: InputDecoration(
-                  labelText: 'Repita a Senha',
-                  errorText: _senhaErrorText,
+                SizedBox(height: 16),
+                TextField(
+                  controller: _senhaController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'Senha',
+                    errorText: _senhaErrorText,
+                  ),
                 ),
-              ),
-              SizedBox(
-                  height: 16), // Espaço entre os campos de entrada e o botão
-              ElevatedButton(
-                onPressed: () {
-                  _registrarUsuario();
-                },
-                child: Text('Registrar'),
-              ),
-            ],
+                SizedBox(height: 16),
+                TextField(
+                  controller: _repetirSenhaController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'Repita a Senha',
+                    errorText: _senhaErrorText,
+                  ),
+                ),
+                SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    _registrarUsuario();
+                  },
+                  child: Text('Registrar'),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -83,11 +83,10 @@ class _CadastroScreenState extends State<CadastroScreen> {
   }
 
   void _registrarUsuario() async {
-    // Realiza a validação da senha
     if (_senhaController.text != _repetirSenhaController.text) {
       setState(() {
         _senhaErrorText = 'As senhas não coincidem';
-        _emailErrorText = null; // Limpa o erro de email
+        _emailErrorText = null;
       });
     } else {
       setState(() {
@@ -95,13 +94,11 @@ class _CadastroScreenState extends State<CadastroScreen> {
         _emailErrorText = null;
       });
 
-      // Verifica se o email é válido
       if (!_isEmailValid(_emailController.text)) {
         setState(() {
           _emailErrorText = 'Email inválido';
         });
       } else {
-        // Crie um mapa com os dados do usuário a serem inseridos no banco de dados
         final newUser = {
           'id': null,
           'username': _nomeController.text,
@@ -109,18 +106,15 @@ class _CadastroScreenState extends State<CadastroScreen> {
           'password': _senhaController.text,
         };
 
-        // Insira o usuário no banco de dados
         final userId = await UserDatabase.instance.insertUser(newUser);
 
         if (userId != null) {
-          // Registro bem-sucedido, navegue para a tela de Controle Geral
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (context) => ControleGeralScreen(),
             ),
           );
         } else {
-          // Lidar com o erro de registro
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
