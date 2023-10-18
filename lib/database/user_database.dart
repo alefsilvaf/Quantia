@@ -1,3 +1,4 @@
+import '../models/UserModel.dart';
 import 'database_helper.dart';
 import 'database_utils.dart';
 
@@ -27,9 +28,11 @@ class UserDatabase {
     return await db.insert(tableName, user);
   }
 
-  Future<List<Map<String, dynamic>>> getUsers() async {
+  Future<List<UserModel>> getUsers() async {
     final db = await DatabaseHelper.instance.database;
-    return await db.query(tableName);
+    final results = await db.query(tableName);
+
+    return results.map((map) => UserModel.fromMap(map)).toList();
   }
 
   Future<Map<String, dynamic>?> getUserById(int id) async {

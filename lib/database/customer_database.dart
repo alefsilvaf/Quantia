@@ -30,6 +30,7 @@ class CustomerDatabase {
   }
 
   Future<List<Map<String, dynamic>>> getCustomers() async {
+    await createCustomerTableIfNotExists(); // Certifique-se de criar a tabela primeiro
     final db = await DatabaseHelper.instance.database;
     return await db.query(tableName);
   }
@@ -50,5 +51,14 @@ class CustomerDatabase {
   Future<int> deleteCustomer(int id) async {
     final db = await DatabaseHelper.instance.database;
     return await db.delete(tableName, where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<List<Map<String, dynamic>>> getCustomersByName(String query) async {
+    final db = await DatabaseHelper.instance.database;
+    return await db.query(
+      tableName,
+      where: 'name LIKE ?',
+      whereArgs: ["%$query%"],
+    );
   }
 }

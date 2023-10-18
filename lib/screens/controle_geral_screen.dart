@@ -1,9 +1,8 @@
 // ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors, prefer_const_constructors_in_immutables
 
 import 'package:flutter/material.dart';
-
 import 'cadastro_screen.dart';
-import 'perfil_screen.dart';
+import 'customer_list_screen.dart';
 
 class ControleGeralScreen extends StatelessWidget {
   @override
@@ -22,10 +21,10 @@ class ControleGeralScreen extends StatelessWidget {
           padding: EdgeInsets.all(16.0), // Espaçamento externo
           children: <Widget>[
             FuncionalidadeQuadro(
-              titulo: 'Perfil',
+              titulo: 'Venda',
               icone: Icons.person,
               cor: Colors.blue,
-              rota: PerfilScreen(),
+              rota: ControleGeralScreen(),
             ),
             FuncionalidadeQuadro(
               titulo: 'Produtos',
@@ -37,7 +36,7 @@ class ControleGeralScreen extends StatelessWidget {
               titulo: 'Clientes',
               icone: Icons.people,
               cor: Colors.orange,
-              rota: CadastroScreen(),
+              rota: CustomerListScreen(),
             ),
             FuncionalidadeQuadro(
               titulo: 'Relatórios',
