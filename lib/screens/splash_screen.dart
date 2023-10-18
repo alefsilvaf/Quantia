@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:projeto_tcc/screens/login_screen.dart';
 
+import 'controle_geral_screen.dart';
+
 class SplashScreen extends StatelessWidget {
   SplashScreen({Key? key}) : super(key: key);
 
@@ -10,7 +12,9 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     Future.delayed(Duration(seconds: 5), () {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => LoginScreen()),
+        MaterialPageRoute(
+            builder: (context) =>
+                ControleGeralScreen()), //to do, voltar para login
       );
     });
 
