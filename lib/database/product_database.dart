@@ -24,12 +24,13 @@ class ProductDatabase {
   }
 
   Future<int> insertProduct(Map<String, dynamic> product) async {
-    createProductTableIfNotExists();
+    await createProductTableIfNotExists();
     final db = await DatabaseHelper.instance.database;
     return await db.insert(tableName, product);
   }
 
   Future<List<Map<String, dynamic>>> getProducts() async {
+    await createProductTableIfNotExists();
     final db = await DatabaseHelper.instance.database;
     return await db.query(tableName);
   }

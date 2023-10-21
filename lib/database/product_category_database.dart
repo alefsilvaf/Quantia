@@ -22,12 +22,13 @@ class ProductCategoryDatabase {
   }
 
   Future<int> insertProductCategory(Map<String, dynamic> category) async {
-    createProductCategoryTableIfNotExists();
+    await createProductCategoryTableIfNotExists();
     final db = await DatabaseHelper.instance.database;
     return await db.insert(tableName, category);
   }
 
   Future<List<Map<String, dynamic>>> getProductCategories() async {
+    await createProductCategoryTableIfNotExists();
     final db = await DatabaseHelper.instance.database;
     return await db.query(tableName);
   }
@@ -48,5 +49,23 @@ class ProductCategoryDatabase {
   Future<int> deleteProductCategory(int id) async {
     final db = await DatabaseHelper.instance.database;
     return await db.delete(tableName, where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<Map<String, dynamic>?> getProductCategoryByName(String name) async {
+    final db = await DatabaseHelper.instance.database;
+    final categories = await db.query(
+      tableName,
+      where: 'name = ?',
+      whereArgs: [name],
+    );
+
+    return categories.isNotEmpty ? categories.first : null;
+  }
+
+  Future<Object?> getCategoryName(int categoryId) async {
+    final db = await DatabaseHelper.instance.database;
+    final categories = await db
+        .query('product_categories', where: 'id = ?', whereArgs: [categoryId]);
+    return categories.isNotEmpty ? categories.first['name'] : null;
   }
 }

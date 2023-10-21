@@ -16,7 +16,7 @@ class SupplierDatabase {
       await DatabaseHelper.instance.createTable(tableName, [
         'id INTEGER PRIMARY KEY',
         'name TEXT NOT NULL',
-        'email TEXT NOT NULL',
+        'email TEXT',
         'phone_number TEXT',
         'address TEXT',
       ]);
@@ -30,6 +30,7 @@ class SupplierDatabase {
   }
 
   Future<List<Map<String, dynamic>>> getSuppliers() async {
+    await createSupplierTableIfNotExists();
     final db = await DatabaseHelper.instance.database;
     return await db.query(tableName);
   }

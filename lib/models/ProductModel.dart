@@ -1,12 +1,12 @@
-// ignore_for_file: file_names
-
 class ProductModel {
   int id;
   String name;
   String description;
   double price;
-  int categoryId; // ID da categoria à qual o produto pertence
-  int supplierId; // ID do fornecedor que fornece o produto
+  int categoryId;
+  String categoryName; // Nome da categoria
+  int supplierId;
+  String supplierName; // Nome do fornecedor
 
   ProductModel({
     required this.id,
@@ -14,7 +14,9 @@ class ProductModel {
     required this.description,
     required this.price,
     required this.categoryId,
+    required this.categoryName,
     required this.supplierId,
+    required this.supplierName, // Adicione o nome do fornecedor aqui
   });
 
   Map<String, dynamic> toMap() {
@@ -24,7 +26,9 @@ class ProductModel {
       'description': description,
       'price': price,
       'category_id': categoryId,
+      'category_name': categoryName,
       'supplier_id': supplierId,
+      'supplier_name': supplierName, // Inclua o nome do fornecedor no mapa
     };
   }
 
@@ -35,7 +39,9 @@ class ProductModel {
       description: map['description'],
       price: map['price'],
       categoryId: map['category_id'],
+      categoryName: map['category_name'],
       supplierId: map['supplier_id'],
+      supplierName: map['supplier_name'],
     );
   }
 }

@@ -1,4 +1,4 @@
-// ignore_for_file: library_private_types_in_public_api, prefer_const_constructors
+// ignore_for_file: library_private_types_in_public_api, prefer_const_constructors, use_key_in_widget_constructors
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,8 +25,7 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
   void _loadCustomers() async {
     final customers = await CustomerDatabase.instance.getCustomers();
     setState(() {
-      _customers =
-          customers ?? []; // Inicializa como uma lista vazia se for nula
+      _customers = customers ?? [];
     });
   }
 
@@ -130,7 +129,7 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
               alignment: Alignment.center,
               child: Container(
                 margin:
-                    EdgeInsets.all(20.0), // Ajuste a margem conforme necessário
+                    EdgeInsets.all(35.0), // Ajuste a margem conforme necessário
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).push(MaterialPageRoute(

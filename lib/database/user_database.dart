@@ -23,7 +23,7 @@ class UserDatabase {
   }
 
   Future<int> insertUser(Map<String, dynamic> user) async {
-    createUserTableIfNotExists();
+    await createUserTableIfNotExists();
     final db = await DatabaseHelper.instance.database;
     return await db.insert(tableName, user);
   }
