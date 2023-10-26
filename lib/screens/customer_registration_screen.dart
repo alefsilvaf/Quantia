@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api, use_key_in_widget_constructors, use_build_context_synchronously, prefer_const_constructors, unnecessary_null_comparison
+
 import 'package:flutter/material.dart';
 import '../database/customer_database.dart';
 import 'customer_list_screen.dart';
@@ -18,6 +20,7 @@ class _CustomerRegistrationScreenState
   final TextEditingController _phoneNumberController = TextEditingController();
 
   void _registerCustomer() async {
+    _emailController.text = _emailController.text.trim();
     if (_formKey.currentState!.validate()) {
       final customer = {
         'name': _nameController.text,
@@ -63,11 +66,14 @@ class _CustomerRegistrationScreenState
       appBar: AppBar(
         title: Text('Cadastro de Cliente'),
       ),
-      resizeToAvoidBottomInset:
-          false, // Isso evita que a tela seja redimensionada quando o teclado aparecer
-
+      resizeToAvoidBottomInset: false,
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.only(
+          top: 55.0,
+          left: 35.0,
+          right: 35.0,
+          bottom: 35.0,
+        ),
         child: Form(
           key: _formKey,
           child: Column(
@@ -112,10 +118,19 @@ class _CustomerRegistrationScreenState
                   return null;
                 },
               ),
-              SizedBox(height: 24.0),
-              ElevatedButton(
-                onPressed: _registerCustomer,
-                child: Text('Cadastrar Cliente'),
+              SizedBox(height: 35.0),
+              Align(
+                alignment: Alignment.center,
+                child: ElevatedButton(
+                  onPressed: _registerCustomer,
+                  child: Text(
+                    'Cadastrar Cliente',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
               ),
             ],
           ),

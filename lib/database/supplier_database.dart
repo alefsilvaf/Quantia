@@ -16,7 +16,7 @@ class SupplierDatabase {
       await DatabaseHelper.instance.createTable(tableName, [
         'id INTEGER PRIMARY KEY',
         'name TEXT NOT NULL',
-        'email TEXT NOT NULL',
+        'email TEXT',
         'phone_number TEXT',
         'address TEXT',
       ]);
@@ -30,6 +30,7 @@ class SupplierDatabase {
   }
 
   Future<List<Map<String, dynamic>>> getSuppliers() async {
+    await createSupplierTableIfNotExists();
     final db = await DatabaseHelper.instance.database;
     return await db.query(tableName);
   }
@@ -50,5 +51,13 @@ class SupplierDatabase {
   Future<int> deleteSupplier(int id) async {
     final db = await DatabaseHelper.instance.database;
     return await db.delete(tableName, where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<String> getSupplierName(int supplierId) async {
+    final supplier = await getSupplierById(supplierId);
+    if (supplier != null) {
+      return supplier['name'] as String;
+    }
+    return 'Indefinido';
   }
 }

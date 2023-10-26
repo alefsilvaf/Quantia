@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 import '../database/user_database.dart';
-import 'cadastro_screen.dart';
-import 'controle_geral_screen.dart';
+import 'user_registration_screen.dart';
+import 'general_control_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override

@@ -1,7 +1,10 @@
 // ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors, prefer_const_constructors_in_immutables
 
 import 'package:flutter/material.dart';
-import 'cadastro_screen.dart';
+import 'product_category_screen.dart';
+import 'product_list_screen.dart';
+import 'supplier_list_screen.dart';
+import 'user_registration_screen.dart';
 import 'customer_list_screen.dart';
 
 class ControleGeralScreen extends StatelessWidget {
@@ -30,7 +33,7 @@ class ControleGeralScreen extends StatelessWidget {
               titulo: 'Produtos',
               icone: Icons.shopping_cart,
               cor: Colors.green,
-              rota: CadastroScreen(),
+              rota: ProductListScreen(),
             ),
             FuncionalidadeQuadro(
               titulo: 'Clientes',
@@ -43,6 +46,12 @@ class ControleGeralScreen extends StatelessWidget {
               icone: Icons.receipt,
               cor: Colors.purple,
               rota: CadastroScreen(),
+            ),
+            FuncionalidadeQuadro(
+              titulo: 'Categoria de Produto',
+              icone: Icons.receipt,
+              cor: Color.fromARGB(255, 158, 20, 185),
+              rota: ProductCategoryScreen(),
             ),
           ],
         ),

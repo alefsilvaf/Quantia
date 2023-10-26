@@ -24,7 +24,7 @@ class CustomerDatabase {
   }
 
   Future<int> insertCustomer(Map<String, dynamic> customer) async {
-    createCustomerTableIfNotExists();
+    await createCustomerTableIfNotExists();
     final db = await DatabaseHelper.instance.database;
     return await db.insert(tableName, customer);
   }
