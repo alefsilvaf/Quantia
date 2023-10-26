@@ -3,9 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../database/customer_database.dart';
 import 'customer_registration_screen.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class CustomerListScreen extends StatefulWidget {
   @override
@@ -31,14 +31,12 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
 
   void _searchCustomers(String query) async {
     if (query.trim().isNotEmpty) {
-      // Verifica se a consulta (após remover espaços em branco) não está vazia
       final customers =
           await CustomerDatabase.instance.getCustomersByName(query);
       setState(() {
         _customers = customers;
       });
     } else {
-      // Se a consulta estiver vazia, carregue todos os clientes
       _loadCustomers();
     }
   }
@@ -60,71 +58,78 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
               child: TextField(
                 controller: _searchController,
                 onChanged: (query) {
-                  _searchCustomers(query
-                      .trim()); // Use trim() para remover espaços em branco
+                  _searchCustomers(query.trim());
                 },
                 decoration: InputDecoration(labelText: 'Pesquisar Cliente'),
               ),
             ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: _customers.length,
-                itemBuilder: (context, index) {
-                  final customer = _customers[index];
-                  return Card(
-                    margin: EdgeInsets.all(8.0),
-                    child: ListTile(
-                      title: Text(
-                        customer['name'].toString().toUpperCase(),
-                        style: TextStyle(
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: 8.0),
-                          Text('Telefone: ${customer['phone_number']}'),
-                          SizedBox(height: 8.0),
-                          Text('E-mail: ${customer['email']}'),
-                          SizedBox(height: 8.0),
-                          Text('Endereço: ${customer['address']}'),
-                          SizedBox(height: 8.0),
-                        ],
-                      ),
-                      onLongPress: () {
-                        // Copie os detalhes do cliente para a área de transferência
-                        final customerDetails =
-                            'Nome: ${customer['name']}\nTelefone: ${customer['phone_number']}\nE-mail: ${customer['email']}\nEndereço: ${customer['address']}';
+            _customers.isEmpty
+                ? Center(
+                    child: Text('Ainda não há clientes cadastrados.'),
+                  )
+                : Expanded(
+                    child: ListView.builder(
+                      itemCount: _customers.length,
+                      itemBuilder: (context, index) {
+                        final customer = _customers[index];
+                        return Card(
+                          margin: EdgeInsets.all(8.0),
+                          child: ListTile(
+                            title: Text(
+                              customer['name'].toString().toUpperCase(),
+                              style: TextStyle(
+                                fontSize: 20.0,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(height: 8.0),
+                                Text('Telefone: ${customer['phone_number']}'),
+                                SizedBox(height: 8.0),
+                                Text('E-mail: ${customer['email']}'),
+                                SizedBox(height: 8.0),
+                                Text('Endereço: ${customer['address']}'),
+                                SizedBox(height: 8.0),
+                              ],
+                            ),
+                            onLongPress: () {
+                              // Copie os detalhes do cliente para a área de transferência
+                              final customerDetails =
+                                  'Nome: ${customer['name']}\nTelefone: ${customer['phone_number']}\nE-mail: ${customer['email']}\nEndereço: ${customer['address']}';
 
-                        Clipboard.setData(ClipboardData(text: customerDetails));
+                              Clipboard.setData(
+                                  ClipboardData(text: customerDetails));
 
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text('Detalhes copiados'),
-                        ));
-                      },
-                      trailing: GestureDetector(
-                        onTap: () async {
-                          _launchWhatsapp('${customer['phone_number']}');
-                        },
-                        child: Container(
-                          alignment: Alignment.bottomLeft,
-                          height: 60.0, // Ajuste com base na altura do Card
-                          width: 48.0, // Ajuste com base na altura do Card
-                          child: FaIcon(
-                            FontAwesomeIcons.whatsapp,
-                            color: Colors.green,
-                            size:
-                                35.0, // Ajuste o tamanho do ícone conforme necessário
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: Text('Detalhes copiados'),
+                              ));
+                            },
+                            trailing: GestureDetector(
+                              onTap: () async {
+                                _launchWhatsapp('${customer['phone_number']}');
+                              },
+                              child: Container(
+                                alignment: Alignment.bottomLeft,
+                                height:
+                                    60.0, // Ajuste com base na altura do Card
+                                width:
+                                    48.0, // Ajuste com base na altura do Card
+                                child: FaIcon(
+                                  FontAwesomeIcons.whatsapp,
+                                  color: Colors.green,
+                                  size:
+                                      35.0, // Ajuste o tamanho do ícone conforme necessário
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
-            ),
+                  ),
             Align(
               alignment: Alignment.center,
               child: Container(

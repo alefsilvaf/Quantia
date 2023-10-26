@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../database/product_category_database.dart';
 import '../database/product_database.dart';
+import '../database/supplier_database.dart';
 import '../models/ProductModel.dart';
 import 'product_registration_screen.dart';
+import 'product_edit_screen.dart';
 
 class ProductListScreen extends StatefulWidget {
   @override
@@ -11,7 +13,7 @@ class ProductListScreen extends StatefulWidget {
 }
 
 class _ProductListScreenState extends State<ProductListScreen> {
-  List<ProductModel> _products = []; // Use a classe ProductModel
+  List<ProductModel> _products = [];
 
   @override
   void initState() {
@@ -21,28 +23,32 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
   _refreshProductList() async {
     var products = await ProductDatabase.instance.getProducts();
-    var updatedProducts = <ProductModel>[]; // Use uma lista de ProductModel
+    var updatedProducts = <ProductModel>[];
 
     for (var productMap in products) {
+      var updatedProductMap = Map<String, dynamic>.from(productMap);
+
       final categoryId = productMap['category_id'];
-      final categoryName = await getCategoryName(categoryId);
+      if (categoryId != null) {
+        final categoryName =
+            await ProductCategoryDatabase.instance.getCategoryName(categoryId);
+
+        updatedProductMap['category_name'] = categoryName;
+      }
+
       final supplierId = productMap['supplier_id'];
-      final supplierName = await getSupplierName(supplierId);
+      if (supplierId != null) {
+        final supplierName =
+            await SupplierDatabase.instance.getSupplierName(supplierId);
 
-      final product = ProductModel(
-        id: productMap['id'],
-        name: productMap['name'],
-        description: productMap['description'],
-        price: productMap['price'],
-        categoryId: categoryId,
-        categoryName: categoryName,
-        supplierId: supplierId,
-        supplierName: supplierName,
-      );
+        updatedProductMap['supplier_name'] = supplierName;
+      }
 
-      updatedProducts.add(product);
+      final productModel = ProductModel.fromMap(updatedProductMap);
+      updatedProducts.add(productModel);
     }
 
+    // Agora, a lista de produtos atualizada deve conter os nomes de categoria e fornecedor corretamente.
     setState(() {
       _products = updatedProducts;
     });
@@ -56,57 +62,85 @@ class _ProductListScreenState extends State<ProductListScreen> {
           ? Center(
               child: Text('Nenhum produto cadastrado.'),
             )
-          : ListView.builder(
-              itemCount: _products.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  child: ListTile(
-                    title: Text(
-                      _products[index].name.toUpperCase(),
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Descrição: ${_products[index].description}'),
-                        Text('Preço: ${_products[index].price}'),
-                        Text(
-                            'Categoria: ${_products[index].categoryName}'), // Exibe o nome da categoria
-                        Text(
-                            'Fornecedor: ${_products[index].supplierName}'), // Exibe o nome do fornecedor
-                      ],
-                    ),
+          : Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: _products.length,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        child: ListTile(
+                          title: Text(
+                            _products[index].name.toUpperCase(),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                  'Descrição: ${_products[index].description}'),
+                              Text('Preço: ${_products[index].price}'),
+                              Text(
+                                'Categoria: ${_products[index].categoryName ?? 'Indefinida'}',
+                              ),
+                              Text(
+                                'Fornecedor: ${_products[index].supplierName ?? 'Indefinido'}',
+                              ),
+                            ],
+                          ),
+                          trailing: InkWell(
+                            onTap: () {
+                              _editProduct(_products[index]);
+                            },
+                            child: Icon(Icons.edit),
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
+                ),
+                Container(
+                  margin: EdgeInsets.all(
+                      16.0), // Adicione margens ao redor do botão
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(20.0), // Arredonda o botão
+                      ),
+                      padding: EdgeInsets.only(
+                          bottom: 10,
+                          top: 10,
+                          left: 45,
+                          right: 45), // Adicione preenchimento ao botão
+                    ),
+                    onPressed: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProductRegistrationScreen(),
+                        ),
+                      );
+                      _refreshProductList();
+                    },
+                    child: Text('Cadastrar Novo'),
+                  ),
+                ),
+              ],
             ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ProductRegistrationScreen(),
-            ),
-          );
-
-          // Atualize a lista de produtos quando voltar da tela de registro
-          _refreshProductList();
-        },
-        child: Icon(Icons.add),
-      ),
     );
   }
 
-  Future<String> getCategoryName(int categoryId) async {
-    final categoryName =
-        await ProductCategoryDatabase.instance.getCategoryName(categoryId);
-    return categoryName.toString();
-  }
-
-  Future<String> getSupplierName(int supplierId) async {
-    // Implemente a lógica para obter o nome do fornecedor a partir do fornecedorId
-    return "Nome do Fornecedor"; // Substitua isso pela lógica real
+  void _editProduct(ProductModel product) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProductEditScreen(product: product),
+      ),
+    ).then((_) {
+      _refreshProductList(); // Atualize a lista após a edição
+    });
   }
 }

@@ -3,20 +3,20 @@ class ProductModel {
   String name;
   String description;
   double price;
-  int categoryId;
-  String categoryName; // Nome da categoria
-  int supplierId;
-  String supplierName; // Nome do fornecedor
+  int? categoryId;
+  String? categoryName; // Nome da categoria
+  int? supplierId;
+  String? supplierName; // Nome do fornecedor
 
   ProductModel({
-    required this.id,
+    required this.id, // Tornar o ID opcional
     required this.name,
     required this.description,
     required this.price,
-    required this.categoryId,
-    required this.categoryName,
-    required this.supplierId,
-    required this.supplierName, // Adicione o nome do fornecedor aqui
+    this.categoryId, // Tornar o categoryID opcional
+    this.categoryName, // Tornar o categoryName opcional
+    this.supplierId, // Tornar o supplierID opcional
+    this.supplierName, // Tornar o supplierName opcional
   });
 
   Map<String, dynamic> toMap() {
@@ -25,10 +25,10 @@ class ProductModel {
       'name': name,
       'description': description,
       'price': price,
-      'category_id': categoryId,
-      'category_name': categoryName,
-      'supplier_id': supplierId,
-      'supplier_name': supplierName, // Inclua o nome do fornecedor no mapa
+      if (categoryId != null) 'category_id': categoryId,
+      if (categoryName != null) 'category_name': categoryName,
+      if (supplierId != null) 'supplier_id': supplierId,
+      if (supplierName != null) 'supplier_name': supplierName,
     };
   }
 
@@ -42,6 +42,28 @@ class ProductModel {
       categoryName: map['category_name'],
       supplierId: map['supplier_id'],
       supplierName: map['supplier_name'],
+    );
+  }
+
+  ProductModel copyWith({
+    int? id,
+    String? name,
+    String? description,
+    double? price,
+    int? categoryId,
+    String? categoryName,
+    int? supplierId,
+    String? supplierName,
+  }) {
+    return ProductModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      price: price ?? this.price,
+      categoryId: categoryId ?? this.categoryId,
+      categoryName: categoryName ?? this.categoryName,
+      supplierId: supplierId ?? this.supplierId,
+      supplierName: supplierName ?? this.supplierName,
     );
   }
 }

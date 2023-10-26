@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../database/supplier_database.dart';
+import 'supplier_list_screen.dart'; // Importe a tela SupplierListScreen
 
 class SupplierRegistrationScreen extends StatefulWidget {
   @override
@@ -15,25 +16,6 @@ class _SupplierRegistrationScreenState
   final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
 
-  List<Map<String, dynamic>> suppliers = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadSuppliers();
-  }
-
-  void _loadSuppliers() async {
-    final existingSuppliers = await SupplierDatabase.instance.getSuppliers();
-    setState(() {
-      if (existingSuppliers != null) {
-        suppliers = existingSuppliers;
-      } else {
-        suppliers = [];
-      }
-    });
-  }
-
   void _registerSupplier() async {
     if (_formKey.currentState!.validate()) {
       final newSupplier = {
@@ -47,11 +29,12 @@ class _SupplierRegistrationScreenState
           await SupplierDatabase.instance.insertSupplier(newSupplier);
 
       if (supplierId != null) {
-        _loadSuppliers();
-        _nameController.clear();
-        _emailController.clear();
-        _phoneNumberController.clear();
-        _addressController.clear();
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) =>
+                SupplierListScreen(), // Vá para a tela de listagem de fornecedores
+          ),
+        );
       } else {
         showDialog(
           context: context,
@@ -86,30 +69,58 @@ class _SupplierRegistrationScreenState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Nome:'),
-              TextFormField(
-                controller: _nameController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'O nome é obrigatório.';
-                  }
-                  return null;
-                },
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text('Nome:'),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: TextFormField(
+                  controller: _nameController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'O nome é obrigatório.';
+                    }
+                    return null;
+                  },
+                  style: TextStyle(fontSize: 18.0),
+                ),
               ),
               SizedBox(height: 16.0),
-              Text('E-mail:'),
-              TextFormField(
-                controller: _emailController,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text('E-mail:'),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: TextFormField(
+                  controller: _emailController,
+                  style: TextStyle(fontSize: 18.0),
+                ),
               ),
               SizedBox(height: 16.0),
-              Text('Telefone:'),
-              TextFormField(
-                controller: _phoneNumberController,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text('Telefone:'),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: TextFormField(
+                  controller: _phoneNumberController,
+                  style: TextStyle(fontSize: 18.0),
+                ),
               ),
               SizedBox(height: 16.0),
-              Text('Endereço:'),
-              TextFormField(
-                controller: _addressController,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text('Endereço:'),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: TextFormField(
+                  controller: _addressController,
+                  style: TextStyle(fontSize: 18.0),
+                ),
               ),
               SizedBox(height: 35.0),
               Align(
@@ -124,28 +135,6 @@ class _SupplierRegistrationScreenState
                     ),
                   ),
                 ),
-              ),
-              SizedBox(height: 20.0),
-              Text(
-                'Lista de Fornecedores',
-                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-              ),
-              Expanded(
-                child: suppliers.isEmpty
-                    ? Center(
-                        child: Text('Nenhum fornecedor cadastrado.'),
-                      )
-                    : ListView.builder(
-                        itemCount: suppliers.length,
-                        itemBuilder: (context, index) {
-                          return Card(
-                            child: ListTile(
-                              title: Text(suppliers[index]['name']),
-                              subtitle: Text(suppliers[index]['email'] ?? ''),
-                            ),
-                          );
-                        },
-                      ),
               ),
             ],
           ),

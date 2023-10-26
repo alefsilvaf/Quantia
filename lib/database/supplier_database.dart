@@ -52,4 +52,12 @@ class SupplierDatabase {
     final db = await DatabaseHelper.instance.database;
     return await db.delete(tableName, where: 'id = ?', whereArgs: [id]);
   }
+
+  Future<String> getSupplierName(int supplierId) async {
+    final supplier = await getSupplierById(supplierId);
+    if (supplier != null) {
+      return supplier['name'] as String;
+    }
+    return 'Indefinido';
+  }
 }

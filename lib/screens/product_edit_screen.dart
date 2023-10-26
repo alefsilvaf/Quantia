@@ -5,36 +5,49 @@ import 'package:intl/intl.dart';
 import '../database/product_category_database.dart';
 import '../database/product_database.dart';
 import '../database/supplier_database.dart';
+import '../models/ProductModel.dart'; // Certifique-se de importar o modelo correto.
 
-class ProductRegistrationScreen extends StatefulWidget {
+class ProductEditScreen extends StatefulWidget {
+  final ProductModel product;
+
+  ProductEditScreen({required this.product});
+
   @override
-  _ProductRegistrationScreenState createState() =>
-      _ProductRegistrationScreenState();
+  _ProductEditScreenState createState() => _ProductEditScreenState();
 }
 
-class _ProductRegistrationScreenState extends State<ProductRegistrationScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _priceController = TextEditingController();
-  int _selectedCategoryId = 0; // Categoria padrão selecionada.
-  int _selectedSupplierId = 0; // Fornecedor padrão selecionado.
-
+class _ProductEditScreenState extends State<ProductEditScreen> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _descriptionController = TextEditingController();
+  TextEditingController _priceController = TextEditingController();
+  int _selectedCategoryId = 0;
+  int _selectedSupplierId = 0;
   List<Map<String, dynamic>> _categories = [];
   List<Map<String, dynamic>> _suppliers = [];
 
   @override
   void initState() {
     super.initState();
+
+    _nameController.text = widget.product.name;
+    _descriptionController.text = widget.product.description;
+    _priceController.text = formatPrice(widget.product.price);
+    _selectedCategoryId = widget.product.categoryId ?? 0;
+    _selectedSupplierId = widget.product.supplierId ?? 0;
+
     _refreshCategories();
     _refreshSuppliers();
+  }
+
+  String formatPrice(double price) {
+    final formatter = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
+    return formatter.format(price);
   }
 
   _refreshCategories() async {
     var categories =
         await ProductCategoryDatabase.instance.getProductCategories();
-
-    // Converter a lista categories para o tipo correto
     var categoriesWithSelect = [
       {'id': 0, 'name': 'SELECIONE'},
       ...categories.map((category) {
@@ -49,8 +62,6 @@ class _ProductRegistrationScreenState extends State<ProductRegistrationScreen> {
 
   _refreshSuppliers() async {
     var suppliers = await SupplierDatabase.instance.getSuppliers();
-
-    // Converter a lista suppliers para o tipo correto
     var suppliersWithSelect = [
       {'id': 0, 'name': 'SELECIONE'},
       ...suppliers.map((supplier) {
@@ -66,12 +77,12 @@ class _ProductRegistrationScreenState extends State<ProductRegistrationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Adicionar Produto')),
+      appBar: AppBar(title: Text('Editar Produto')),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: SingleChildScrollView(
           child: Form(
-            key: _formKey,
+            key: _formKey, // Use o _formKey para validar o formulário.
             child: Column(
               children: [
                 TextFormField(
@@ -101,9 +112,7 @@ class _ProductRegistrationScreenState extends State<ProductRegistrationScreen> {
                     FilteringTextInputFormatter.allow(RegExp(r'[0-9,]')),
                   ],
                   keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: 'Preço do Produto',
-                  ),
+                  decoration: InputDecoration(labelText: 'Preço do Produto'),
                   validator: (value) {
                     if (value!.isEmpty) {
                       return 'O campo preço do produto não pode estar vazio.';
@@ -112,7 +121,6 @@ class _ProductRegistrationScreenState extends State<ProductRegistrationScreen> {
                   },
                   onChanged: (value) {
                     if (value.isNotEmpty) {
-                      // Remova vírgulas e pontos para analisar como número
                       double amount =
                           double.parse(value.replaceAll(RegExp(r'[^\d]'), '')) /
                               100;
@@ -125,9 +133,8 @@ class _ProductRegistrationScreenState extends State<ProductRegistrationScreen> {
                   },
                 ),
                 InputDecorator(
-                  decoration: InputDecoration(
-                    labelText: 'Categoria do Produto',
-                  ),
+                  decoration:
+                      InputDecoration(labelText: 'Categoria do Produto'),
                   child: DropdownButton<int>(
                     value: _selectedCategoryId,
                     items: _categories.map((category) {
@@ -144,9 +151,7 @@ class _ProductRegistrationScreenState extends State<ProductRegistrationScreen> {
                   ),
                 ),
                 InputDecorator(
-                  decoration: InputDecoration(
-                    labelText: 'Fornecedor',
-                  ),
+                  decoration: InputDecoration(labelText: 'Fornecedor'),
                   child: DropdownButton<int>(
                     value: _selectedSupplierId,
                     items: _suppliers.map((supplier) {
@@ -166,22 +171,27 @@ class _ProductRegistrationScreenState extends State<ProductRegistrationScreen> {
                 ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      Map<String, dynamic> product = {
-                        'name': _nameController.text,
-                        'description': _descriptionController.text,
-                        'price': double.parse(_priceController.text
-                                .replaceAll(RegExp(r'[^\d]'), '')) /
-                            100,
-                        'category_id': _selectedCategoryId,
-                        'supplier_id': _selectedSupplierId,
-                      };
+                      final updatedName = _nameController.text;
+                      final updatedDescription = _descriptionController.text;
+                      final updatedPrice = double.parse(_priceController.text
+                              .replaceAll(RegExp(r'[^\d]'), '')) /
+                          100;
 
-                      await ProductDatabase.instance.insertProduct(product);
-                      Navigator.of(context)
-                          .pop(); // Voltar para a tela anterior após o cadastro.
+                      final updatedProduct = ProductModel(
+                        id: widget.product.id,
+                        name: updatedName,
+                        description: updatedDescription,
+                        price: updatedPrice,
+                        categoryId: _selectedCategoryId,
+                        supplierId: _selectedSupplierId,
+                      );
+
+                      _updateProduct(updatedProduct);
+
+                      Navigator.pop(context);
                     }
                   },
-                  child: Text('Adicionar Produto'),
+                  child: Text('Salvar Alterações'),
                 ),
               ],
             ),
@@ -189,5 +199,9 @@ class _ProductRegistrationScreenState extends State<ProductRegistrationScreen> {
         ),
       ),
     );
+  }
+
+  void _updateProduct(ProductModel updatedProduct) async {
+    await ProductDatabase.instance.updateProduct(updatedProduct.toMap());
   }
 }
