@@ -58,14 +58,14 @@ class _ProductListScreenState extends State<ProductListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Lista de Produtos')),
-      body: _products.isEmpty
-          ? Center(
-              child: Text('Nenhum produto cadastrado.'),
-            )
-          : Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
+      body: Column(
+        children: [
+          Expanded(
+            child: _products.isEmpty
+                ? Center(
+                    child: Text('Nenhum produto cadastrado.'),
+                  )
+                : ListView.builder(
                     itemCount: _products.length,
                     itemBuilder: (context, index) {
                       return Card(
@@ -100,36 +100,35 @@ class _ProductListScreenState extends State<ProductListScreen> {
                       );
                     },
                   ),
+          ),
+          Container(
+            margin: EdgeInsets.all(16.0), // Adicione margens ao redor do botão
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(20.0), // Arredonda o botão
                 ),
-                Container(
-                  margin: EdgeInsets.all(
-                      16.0), // Adicione margens ao redor do botão
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(20.0), // Arredonda o botão
-                      ),
-                      padding: EdgeInsets.only(
-                          bottom: 10,
-                          top: 10,
-                          left: 45,
-                          right: 45), // Adicione preenchimento ao botão
-                    ),
-                    onPressed: () async {
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ProductRegistrationScreen(),
-                        ),
-                      );
-                      _refreshProductList();
-                    },
-                    child: Text('Cadastrar Novo'),
+                padding: EdgeInsets.only(
+                    bottom: 10,
+                    top: 10,
+                    left: 45,
+                    right: 45), // Adicione preenchimento ao botão
+              ),
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProductRegistrationScreen(),
                   ),
-                ),
-              ],
+                );
+                _refreshProductList();
+              },
+              child: Text('Cadastrar Novo'),
             ),
+          ),
+        ],
+      ),
     );
   }
 

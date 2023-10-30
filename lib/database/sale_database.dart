@@ -4,6 +4,8 @@ import 'database_utils.dart';
 class SaleDatabase {
   static final SaleDatabase instance = SaleDatabase._privateConstructor();
   static const String tableName = 'sales';
+  static const String saleItemsTable =
+      'sale_items'; // Tabela para itens de venda
 
   SaleDatabase._privateConstructor();
 
@@ -15,14 +17,33 @@ class SaleDatabase {
       await DatabaseHelper.instance.createTable(tableName, [
         'id INTEGER PRIMARY KEY',
         'customer_id INTEGER NOT NULL',
-        'products TEXT NOT NULL',
         'total_price REAL NOT NULL',
+        'is_credit INTEGER', // Adicione um campo para indicar se a venda é a crédito
+        'payment_date TEXT',
+        'due_date TEXT',
         'sale_date TEXT NOT NULL',
       ]);
     }
+
+    // Crie a tabela para itens de venda
+    await DatabaseHelper.instance.createTable(saleItemsTable, [
+      'id INTEGER PRIMARY KEY',
+      'sale_id INTEGER NOT NULL', // Associação com a venda
+      'product_id INTEGER NOT NULL', // ID do produto vendido
+      'quantity REAL NOT NULL',
+      'item_price REAL NOT NULL',
+      'discount_item_price REAL', // Adicione um campo para desconto
+    ]);
   }
 
   Future<int> insertSale(Map<String, dynamic> sale) async {
+    createSaleTableIfNotExists();
+    final db = await DatabaseHelper.instance.database;
+    return await db.insert(tableName, sale);
+  }
+
+  // Adicione esta função para inserir uma venda com desconto, crédito e data de pagamento
+  Future<int> insertSaleWithDiscount(Map<String, dynamic> sale) async {
     createSaleTableIfNotExists();
     final db = await DatabaseHelper.instance.database;
     return await db.insert(tableName, sale);
@@ -48,5 +69,17 @@ class SaleDatabase {
   Future<int> deleteSale(int id) async {
     final db = await DatabaseHelper.instance.database;
     return await db.delete(tableName, where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<List<Map<String, dynamic>>> getSaleItems(int saleId) async {
+    final db = await DatabaseHelper.instance.database;
+    return await db
+        .query(saleItemsTable, where: 'sale_id = ?', whereArgs: [saleId]);
+  }
+
+  Future<int> insertSaleItem(Map<String, dynamic> saleItem) async {
+    createSaleTableIfNotExists();
+    final db = await DatabaseHelper.instance.database;
+    return await db.insert(saleItemsTable, saleItem);
   }
 }

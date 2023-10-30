@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'product_category_screen.dart';
 import 'product_list_screen.dart';
+import 'sale_screen.dart';
 import 'supplier_list_screen.dart';
 import 'user_registration_screen.dart';
 import 'customer_list_screen.dart';
@@ -27,7 +28,7 @@ class ControleGeralScreen extends StatelessWidget {
               titulo: 'Venda',
               icone: Icons.person,
               cor: Colors.blue,
-              rota: ControleGeralScreen(),
+              rota: SaleScreen(),
             ),
             FuncionalidadeQuadro(
               titulo: 'Produtos',
@@ -52,6 +53,12 @@ class ControleGeralScreen extends StatelessWidget {
               icone: Icons.receipt,
               cor: Color.fromARGB(255, 158, 20, 185),
               rota: ProductCategoryScreen(),
+            ),
+            FuncionalidadeQuadro(
+              titulo: 'Fornecedores',
+              icone: Icons.receipt,
+              cor: Color.fromARGB(255, 158, 20, 185),
+              rota: SupplierListScreen(),
             ),
           ],
         ),
