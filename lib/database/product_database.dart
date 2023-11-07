@@ -1,5 +1,3 @@
-import 'package:sqflite/sqlite_api.dart';
-
 import 'database_helper.dart';
 import 'database_utils.dart';
 
@@ -19,6 +17,7 @@ class ProductDatabase {
         'name TEXT NOT NULL',
         'description TEXT',
         'price REAL NOT NULL',
+        'quantity INTEGER',
         'category_id INTEGER',
         'supplier_id INTEGER', // Adicione esta linha para o ID do fornecedor
       ]);

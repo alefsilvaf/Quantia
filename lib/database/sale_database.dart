@@ -15,7 +15,7 @@ class SaleDatabase {
 
     if (!tableExists) {
       await DatabaseHelper.instance.createTable(tableName, [
-        'id INTEGER PRIMARY KEY',
+        'id INTEGER PRIMARY KEY AUTOINCREMENT',
         'customer_id INTEGER NOT NULL',
         'total_price REAL NOT NULL',
         'is_credit INTEGER', // Adicione um campo para indicar se a venda é a crédito
@@ -23,28 +23,28 @@ class SaleDatabase {
         'due_date TEXT',
         'sale_date TEXT NOT NULL',
       ]);
-    }
 
-    // Crie a tabela para itens de venda
-    await DatabaseHelper.instance.createTable(saleItemsTable, [
-      'id INTEGER PRIMARY KEY',
-      'sale_id INTEGER NOT NULL', // Associação com a venda
-      'product_id INTEGER NOT NULL', // ID do produto vendido
-      'quantity REAL NOT NULL',
-      'item_price REAL NOT NULL',
-      'discount_item_price REAL', // Adicione um campo para desconto
-    ]);
+      // Crie a tabela para itens de venda
+      await DatabaseHelper.instance.createTable(saleItemsTable, [
+        'id INTEGER PRIMARY KEY AUTOINCREMENT',
+        'sale_id INTEGER NOT NULL', // Associação com a venda
+        'product_id INTEGER NOT NULL', // ID do produto vendido
+        'quantity REAL NOT NULL',
+        'item_price REAL NOT NULL',
+        'discount_item_price REAL', // Adicione um campo para desconto
+      ]);
+    }
   }
 
   Future<int> insertSale(Map<String, dynamic> sale) async {
-    createSaleTableIfNotExists();
+    await createSaleTableIfNotExists();
     final db = await DatabaseHelper.instance.database;
     return await db.insert(tableName, sale);
   }
 
   // Adicione esta função para inserir uma venda com desconto, crédito e data de pagamento
   Future<int> insertSaleWithDiscount(Map<String, dynamic> sale) async {
-    createSaleTableIfNotExists();
+    await createSaleTableIfNotExists();
     final db = await DatabaseHelper.instance.database;
     return await db.insert(tableName, sale);
   }
@@ -78,7 +78,7 @@ class SaleDatabase {
   }
 
   Future<int> insertSaleItem(Map<String, dynamic> saleItem) async {
-    createSaleTableIfNotExists();
+    await createSaleTableIfNotExists();
     final db = await DatabaseHelper.instance.database;
     return await db.insert(saleItemsTable, saleItem);
   }

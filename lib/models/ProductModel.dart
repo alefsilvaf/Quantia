@@ -1,20 +1,22 @@
 class ProductModel {
   int id;
   String name;
-  String description;
+  String? description;
   double price;
   int? categoryId;
   String? categoryName; // Nome da categoria
+  int quantity;
   int? supplierId;
   String? supplierName; // Nome do fornecedor
 
   ProductModel({
     required this.id, // Tornar o ID opcional
     required this.name,
-    required this.description,
+    this.description,
     required this.price,
     this.categoryId, // Tornar o categoryID opcional
     this.categoryName, // Tornar o categoryName opcional
+    required this.quantity,
     this.supplierId, // Tornar o supplierID opcional
     this.supplierName, // Tornar o supplierName opcional
   });
@@ -27,6 +29,7 @@ class ProductModel {
       'price': price,
       if (categoryId != null) 'category_id': categoryId,
       if (categoryName != null) 'category_name': categoryName,
+      'quantity': quantity,
       if (supplierId != null) 'supplier_id': supplierId,
       if (supplierName != null) 'supplier_name': supplierName,
     };
@@ -40,6 +43,21 @@ class ProductModel {
       price: map['price'],
       categoryId: map['category_id'],
       categoryName: map['category_name'],
+      quantity: map['quantity'],
+      supplierId: map['supplier_id'],
+      supplierName: map['supplier_name'],
+    );
+  }
+
+  factory ProductModel.fromMapWithoutQuantity(Map<String, dynamic> map) {
+    return ProductModel(
+      id: map['id'],
+      name: map['name'],
+      description: map['description'],
+      price: map['price'],
+      categoryId: map['category_id'],
+      categoryName: map['category_name'],
+      quantity: 0,
       supplierId: map['supplier_id'],
       supplierName: map['supplier_name'],
     );
@@ -52,6 +70,7 @@ class ProductModel {
     double? price,
     int? categoryId,
     String? categoryName,
+    int? quantity,
     int? supplierId,
     String? supplierName,
   }) {
@@ -62,6 +81,7 @@ class ProductModel {
       price: price ?? this.price,
       categoryId: categoryId ?? this.categoryId,
       categoryName: categoryName ?? this.categoryName,
+      quantity: quantity ?? this.quantity,
       supplierId: supplierId ?? this.supplierId,
       supplierName: supplierName ?? this.supplierName,
     );

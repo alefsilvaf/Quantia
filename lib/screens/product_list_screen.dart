@@ -48,7 +48,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
       updatedProducts.add(productModel);
     }
 
-    // Agora, a lista de produtos atualizada deve conter os nomes de categoria e fornecedor corretamente.
     setState(() {
       _products = updatedProducts;
     });
@@ -69,32 +68,43 @@ class _ProductListScreenState extends State<ProductListScreen> {
                     itemCount: _products.length,
                     itemBuilder: (context, index) {
                       return Card(
+                        margin: EdgeInsets.symmetric(
+                          horizontal: 16.0, // Margens horizontais
+                          vertical: 5.0, // Margens verticais
+                        ),
                         child: ListTile(
-                          title: Text(
-                            _products[index].name.toUpperCase(),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          title: Row(
                             children: [
-                              Text(
-                                  'Descrição: ${_products[index].description}'),
-                              Text('Preço: ${_products[index].price}'),
-                              Text(
-                                'Categoria: ${_products[index].categoryName ?? 'Indefinida'}',
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      _products[index].name.toUpperCase(),
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize:
+                                            20.0, // Tamanho da fonte aumentado
+                                      ),
+                                    ),
+                                    Text(
+                                      'Descrição: ${_products[index].description}',
+                                    ),
+                                    Text('Preço: ${_products[index].price}'),
+                                    Text(
+                                      'Quantidade: ${_products[index].quantity != null && _products[index].quantity as int > 0 ? _products[index].quantity.toString() : '-'}',
+                                    ),
+                                    Text(
+                                      'Categoria: ${_products[index].categoryName ?? 'Indefinida'}',
+                                    ),
+                                    Text(
+                                      'Fornecedor: ${_products[index].supplierName ?? 'Indefinido'}',
+                                    ),
+                                  ],
+                                ),
                               ),
-                              Text(
-                                'Fornecedor: ${_products[index].supplierName ?? 'Indefinido'}',
-                              ),
+                              _buildEditButton(index),
                             ],
-                          ),
-                          trailing: InkWell(
-                            onTap: () {
-                              _editProduct(_products[index]);
-                            },
-                            child: Icon(Icons.edit),
                           ),
                         ),
                       );
@@ -102,18 +112,18 @@ class _ProductListScreenState extends State<ProductListScreen> {
                   ),
           ),
           Container(
-            margin: EdgeInsets.all(16.0), // Adicione margens ao redor do botão
+            margin: EdgeInsets.all(16.0),
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
-                  borderRadius:
-                      BorderRadius.circular(20.0), // Arredonda o botão
+                  borderRadius: BorderRadius.circular(20.0),
                 ),
                 padding: EdgeInsets.only(
-                    bottom: 10,
-                    top: 10,
-                    left: 45,
-                    right: 45), // Adicione preenchimento ao botão
+                  bottom: 10,
+                  top: 10,
+                  left: 45,
+                  right: 45,
+                ),
               ),
               onPressed: () async {
                 await Navigator.push(
@@ -132,6 +142,18 @@ class _ProductListScreenState extends State<ProductListScreen> {
     );
   }
 
+  Widget _buildEditButton(int index) {
+    return InkWell(
+      onTap: () {
+        _editProduct(_products[index]);
+      },
+      child: Container(
+        padding: EdgeInsets.all(8.0),
+        child: Icon(Icons.edit),
+      ),
+    );
+  }
+
   void _editProduct(ProductModel product) {
     Navigator.push(
       context,
@@ -139,7 +161,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
         builder: (context) => ProductEditScreen(product: product),
       ),
     ).then((_) {
-      _refreshProductList(); // Atualize a lista após a edição
+      _refreshProductList();
     });
   }
 }
