@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../database/supplier_database.dart';
+import '../utils/success_message.dart';
 import 'supplier_list_screen.dart'; // Importe a tela SupplierListScreen
 
 class SupplierRegistrationScreen extends StatefulWidget {
@@ -29,6 +30,14 @@ class _SupplierRegistrationScreenState
           await SupplierDatabase.instance.insertSupplier(newSupplier);
 
       if (supplierId != null) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => SuccessScreen(),
+          ),
+        );
+
+        // Aguardar por um período (por exemplo, 2 segundos).
+        await Future.delayed(Duration(seconds: 2));
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) =>

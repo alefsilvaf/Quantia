@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import '../database/customer_database.dart';
+import '../utils/success_message.dart';
 import 'customer_list_screen.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
@@ -33,7 +34,17 @@ class _CustomerRegistrationScreenState
           await CustomerDatabase.instance.insertCustomer(customer);
 
       if (customerId != null) {
-        // Registro bem-sucedido, navegue para a tela de lista de clientes.
+        // Registro bem-sucedido, navegue para a tela de sucesso.
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => SuccessScreen(),
+          ),
+        );
+
+        // Aguardar por um período (por exemplo, 2 segundos).
+        await Future.delayed(Duration(seconds: 2));
+
+        // Redirecionar para a tela de controle geral.
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => CustomerListScreen(),

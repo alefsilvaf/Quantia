@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import '../database/customer_database.dart';
 import '../database/product_database.dart';
@@ -19,7 +21,7 @@ class _SaleScreenState extends State<SaleScreen> {
   DateTime? dueDate;
   bool isDateSelected = false;
 
-  bool isCredit = false;
+  int isCredit = 0;
   List<ProductModel> products = [];
   List<CustomerModel> customers = [];
   TextEditingController _customerController = TextEditingController();
@@ -299,16 +301,17 @@ class _SaleScreenState extends State<SaleScreen> {
                   children: [
                     Text('Venda Fiado'),
                     Checkbox(
-                      value: isCredit,
+                      value: isCredit == 0 ? false : true,
                       onChanged: (value) {
                         setState(() {
-                          isCredit = value ?? false;
+                          isCredit = value! ? 1 : 0;
                         });
                       },
                     ),
                   ],
                 ),
-                if (isCredit) // Mostra o calendário se 'Venda Fiado' estiver marcado.
+                if (isCredit ==
+                    1) // Mostra o calendário se 'Venda Fiado' estiver marcado.
                   Column(
                     children: [
                       buildDatePicker(
@@ -385,7 +388,7 @@ class _SaleScreenState extends State<SaleScreen> {
                       selectedProducts.clear();
 
                       setState(() {
-                        isCredit = false;
+                        isCredit = 0;
                       });
 
                       handleSaleCompletion();
@@ -436,7 +439,7 @@ class _SaleScreenState extends State<SaleScreen> {
           });
         }
       },
-      child: Text('Selecionar Data de Pagamento da Venda'),
+      child: Text('Selecionar Data de Pagamento Prevista'),
     );
   }
 }

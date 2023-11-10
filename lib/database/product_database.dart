@@ -53,4 +53,14 @@ class ProductDatabase {
     final db = await DatabaseHelper.instance.database;
     return await db.delete(tableName, where: 'id = ?', whereArgs: [id]);
   }
+
+  Future<List<Map<String, dynamic>>> searchProducts(String searchTerm) async {
+    await createProductTableIfNotExists();
+    final db = await DatabaseHelper.instance.database;
+    return await db.query(
+      tableName,
+      where: 'name LIKE ? OR description LIKE ?',
+      whereArgs: ['%$searchTerm%', '%$searchTerm%'],
+    );
+  }
 }

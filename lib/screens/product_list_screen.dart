@@ -6,6 +6,7 @@ import '../database/supplier_database.dart';
 import '../models/ProductModel.dart';
 import 'product_registration_screen.dart';
 import 'product_edit_screen.dart';
+import 'package:flutter/material.dart';
 
 class ProductListScreen extends StatefulWidget {
   @override
@@ -14,6 +15,7 @@ class ProductListScreen extends StatefulWidget {
 
 class _ProductListScreenState extends State<ProductListScreen> {
   List<ProductModel> _products = [];
+  TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -22,34 +24,16 @@ class _ProductListScreenState extends State<ProductListScreen> {
   }
 
   _refreshProductList() async {
-    var products = await ProductDatabase.instance.getProducts();
-    var updatedProducts = <ProductModel>[];
+    final searchTerm = _searchController.text.trim().toLowerCase();
+    final filteredProductsData =
+        await ProductDatabase.instance.searchProducts(searchTerm);
 
-    for (var productMap in products) {
-      var updatedProductMap = Map<String, dynamic>.from(productMap);
-
-      final categoryId = productMap['category_id'];
-      if (categoryId != null) {
-        final categoryName =
-            await ProductCategoryDatabase.instance.getCategoryName(categoryId);
-
-        updatedProductMap['category_name'] = categoryName;
-      }
-
-      final supplierId = productMap['supplier_id'];
-      if (supplierId != null) {
-        final supplierName =
-            await SupplierDatabase.instance.getSupplierName(supplierId);
-
-        updatedProductMap['supplier_name'] = supplierName;
-      }
-
-      final productModel = ProductModel.fromMap(updatedProductMap);
-      updatedProducts.add(productModel);
-    }
+    final filteredProducts = filteredProductsData
+        .map((productData) => ProductModel.fromMap(productData))
+        .toList();
 
     setState(() {
-      _products = updatedProducts;
+      _products = filteredProducts;
     });
   }
 
@@ -59,6 +43,25 @@ class _ProductListScreenState extends State<ProductListScreen> {
       appBar: AppBar(title: Text('Lista de Produtos')),
       body: Column(
         children: [
+          Padding(
+            padding: EdgeInsets.all(16.0),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                labelText: 'Pesquisar produtos',
+                suffixIcon: IconButton(
+                  icon: Icon(Icons.clear),
+                  onPressed: () {
+                    _searchController.clear();
+                    _refreshProductList();
+                  },
+                ),
+              ),
+              onChanged: (value) {
+                _refreshProductList();
+              },
+            ),
+          ),
           Expanded(
             child: _products.isEmpty
                 ? Center(
@@ -69,8 +72,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
                     itemBuilder: (context, index) {
                       return Card(
                         margin: EdgeInsets.symmetric(
-                          horizontal: 16.0, // Margens horizontais
-                          vertical: 5.0, // Margens verticais
+                          horizontal: 16.0,
+                          vertical: 5.0,
                         ),
                         child: ListTile(
                           title: Row(
@@ -83,8 +86,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                       _products[index].name.toUpperCase(),
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        fontSize:
-                                            20.0, // Tamanho da fonte aumentado
+                                        fontSize: 20.0,
                                       ),
                                     ),
                                     Text(

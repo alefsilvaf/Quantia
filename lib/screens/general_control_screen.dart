@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'capital_transaction_screen.dart';
 import 'product_category_screen.dart';
 import 'product_list_screen.dart';
 import 'sale_screen.dart';
@@ -60,6 +61,12 @@ class ControleGeralScreen extends StatelessWidget {
               icone: Icons.group,
               cor: customColor,
               rota: SupplierListScreen(),
+            ),
+            FuncionalidadeQuadro(
+              titulo: 'Entrada/Saída de Caixa',
+              icone: Icons.group,
+              cor: customColor,
+              rota: CapitalTransactionListScreen(),
             ),
           ],
         ),

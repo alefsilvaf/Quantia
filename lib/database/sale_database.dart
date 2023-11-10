@@ -1,3 +1,4 @@
+import '../models/SaleModel.dart';
 import 'database_helper.dart';
 import 'database_utils.dart';
 
@@ -81,5 +82,34 @@ class SaleDatabase {
     await createSaleTableIfNotExists();
     final db = await DatabaseHelper.instance.database;
     return await db.insert(saleItemsTable, saleItem);
+  }
+
+  Future<List<Map<String, dynamic>>> getSalesWithoutCreditOption() async {
+    final db = await DatabaseHelper.instance.database;
+    final now = DateTime.now();
+    final startDate = DateTime(now.year, now.month, 1);
+    final endDate = DateTime(now.year, now.month + 1, 0);
+
+    return await db.query(
+      tableName,
+      where: 'is_credit = ? ',
+      whereArgs: [
+        0,
+        //startDate.toIso8601String(),
+        //endDate.toIso8601String()
+      ],
+    );
+  }
+
+  Future<String> getCustomerNameBySale(Sale sale) async {
+    final db = await DatabaseHelper.instance.database;
+    final result = await db.rawQuery('''
+    SELECT customers.name AS customer_name
+    FROM sales
+    INNER JOIN customers ON sales.customer_id = customers.id
+    WHERE sales.id = ?
+  ''', [sale.id]);
+
+    return result.isNotEmpty ? result.first['customer_name'].toString() : '';
   }
 }
