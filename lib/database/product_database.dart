@@ -1,5 +1,3 @@
-import 'package:sqflite/sqlite_api.dart';
-
 import 'database_helper.dart';
 import 'database_utils.dart';
 
@@ -19,6 +17,7 @@ class ProductDatabase {
         'name TEXT NOT NULL',
         'description TEXT',
         'price REAL NOT NULL',
+        'quantity INTEGER',
         'category_id INTEGER',
         'supplier_id INTEGER', // Adicione esta linha para o ID do fornecedor
       ]);
@@ -53,5 +52,15 @@ class ProductDatabase {
   Future<int> deleteProduct(int id) async {
     final db = await DatabaseHelper.instance.database;
     return await db.delete(tableName, where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<List<Map<String, dynamic>>> searchProducts(String searchTerm) async {
+    await createProductTableIfNotExists();
+    final db = await DatabaseHelper.instance.database;
+    return await db.query(
+      tableName,
+      where: 'name LIKE ? OR description LIKE ?',
+      whereArgs: ['%$searchTerm%', '%$searchTerm%'],
+    );
   }
 }

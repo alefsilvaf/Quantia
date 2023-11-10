@@ -31,7 +31,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
     super.initState();
 
     _nameController.text = widget.product.name;
-    _descriptionController.text = widget.product.description;
+    _descriptionController.text = widget.product.description ?? '';
     _priceController.text = formatPrice(widget.product.price);
     _selectedCategoryId = widget.product.categoryId ?? 0;
     _selectedSupplierId = widget.product.supplierId ?? 0;
@@ -182,6 +182,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
                         name: updatedName,
                         description: updatedDescription,
                         price: updatedPrice,
+                        quantity: widget.product.quantity,
                         categoryId: _selectedCategoryId,
                         supplierId: _selectedSupplierId,
                       );

@@ -1,9 +1,9 @@
-// ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors, prefer_const_constructors_in_immutables
-
 import 'package:flutter/material.dart';
+import 'capital_transaction_screen.dart';
 import 'product_category_screen.dart';
 import 'product_list_screen.dart';
 import 'sale_screen.dart';
+import 'sales_list_screen.dart';
 import 'supplier_list_screen.dart';
 import 'user_registration_screen.dart';
 import 'customer_list_screen.dart';
@@ -11,6 +11,8 @@ import 'customer_list_screen.dart';
 class ControleGeralScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    Color customColor = Color(0xFF6D6AFC);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Controle Geral'),
@@ -26,39 +28,45 @@ class ControleGeralScreen extends StatelessWidget {
           children: <Widget>[
             FuncionalidadeQuadro(
               titulo: 'Venda',
-              icone: Icons.person,
-              cor: Colors.blue,
+              icone: Icons.attach_money,
+              cor: customColor,
               rota: SaleScreen(),
             ),
             FuncionalidadeQuadro(
               titulo: 'Produtos',
-              icone: Icons.shopping_cart,
-              cor: Colors.green,
+              icone: Icons.storage,
+              cor: customColor,
               rota: ProductListScreen(),
             ),
             FuncionalidadeQuadro(
               titulo: 'Clientes',
               icone: Icons.people,
-              cor: Colors.orange,
+              cor: customColor,
               rota: CustomerListScreen(),
             ),
             FuncionalidadeQuadro(
               titulo: 'Relatórios',
-              icone: Icons.receipt,
-              cor: Colors.purple,
-              rota: CadastroScreen(),
+              icone: Icons.poll_rounded,
+              cor: customColor,
+              rota: SalesListScreen(),
             ),
             FuncionalidadeQuadro(
               titulo: 'Categoria de Produto',
-              icone: Icons.receipt,
-              cor: Color.fromARGB(255, 158, 20, 185),
+              icone: Icons.storage_rounded,
+              cor: customColor,
               rota: ProductCategoryScreen(),
             ),
             FuncionalidadeQuadro(
               titulo: 'Fornecedores',
-              icone: Icons.receipt,
-              cor: Color.fromARGB(255, 158, 20, 185),
+              icone: Icons.group,
+              cor: customColor,
               rota: SupplierListScreen(),
+            ),
+            FuncionalidadeQuadro(
+              titulo: 'Entrada/Saída de Caixa',
+              icone: Icons.group,
+              cor: customColor,
+              rota: CapitalTransactionListScreen(),
             ),
           ],
         ),
@@ -97,6 +105,7 @@ class FuncionalidadeQuadro extends StatelessWidget {
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center, // Centraliza o título
           children: <Widget>[
             Icon(
               icone,
@@ -110,6 +119,7 @@ class FuncionalidadeQuadro extends StatelessWidget {
                 fontSize: 18,
                 color: Colors.white,
               ),
+              textAlign: TextAlign.center, // Alinha o texto ao centro
             ),
           ],
         ),

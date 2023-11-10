@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import '../database/customer_database.dart';
 import '../database/product_database.dart';
@@ -5,19 +7,8 @@ import '../database/sale_database.dart';
 import '../models/CustomerModel.dart';
 import '../models/ProductModel.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-
-import '../models/SaleModel.dart'; // Importe o pacote flutter_typeahead
-
-class Product {
-  int productId; // Propriedade para o ID do produto
-  String name;
-  String description;
-  double price;
-  int quantity;
-
-  Product(
-      this.productId, this.name, this.description, this.price, this.quantity);
-}
+import '../models/SaleModel.dart';
+import '../utils/success_message.dart';
 
 class SaleScreen extends StatefulWidget {
   CustomerModel? selectedCustomer;
@@ -27,45 +18,45 @@ class SaleScreen extends StatefulWidget {
 }
 
 class _SaleScreenState extends State<SaleScreen> {
-  bool isCredit = false;
-  List<Product> products = [];
+  DateTime? dueDate;
+  bool isDateSelected = false;
+
+  int isCredit = 0;
+  List<ProductModel> products = [];
   List<CustomerModel> customers = [];
-  TextEditingController _customerController =
-      TextEditingController(); // Controller para a pesquisa de clientes
-  List<Product> selectedProducts =
-      []; // Lista para rastrear os produtos selecionados
+  TextEditingController _customerController = TextEditingController();
+  List<ProductModel> selectedProducts = [];
 
   @override
   void initState() {
     super.initState();
-    loadCustomersAndProducts();
+    initializeProducts();
+    initializeCustomers();
   }
 
-  Future<void> loadCustomersAndProducts() async {
-    final loadedCustomers = await CustomerDatabase.instance.getCustomers();
-    final loadedProducts = await ProductDatabase.instance.getProducts();
-
+  Future<void> initializeProducts() async {
+    final loadedProducts = await loadProducts();
     setState(() {
-      customers = loadedCustomers
-          .map((customer) => CustomerModel.fromMap(customer))
-          .toList();
-      products = loadedProducts
-          .map((product) => ProductModel.fromMap(product))
-          .map((productModel) => Product(
-                productModel.id,
-                productModel.name,
-                productModel.description,
-                productModel.price,
-                0,
-              ))
-          .toList();
+      products = loadedProducts;
     });
   }
 
-  void updateSelectedProducts(Product product) {
-    if (!selectedProducts.contains(product)) {
-      selectedProducts.add(product);
-    }
+  Future<void> initializeCustomers() async {
+    customers = await loadCustomers();
+  }
+
+  Future<List<ProductModel>> loadProducts() async {
+    final productData = await ProductDatabase.instance.getProducts();
+    return productData
+        .map((product) => ProductModel.fromMapWithoutQuantity(product))
+        .toList();
+  }
+
+  Future<List<CustomerModel>> loadCustomers() async {
+    final customerData = await CustomerDatabase.instance.getCustomers();
+    return customerData
+        .map((customer) => CustomerModel.fromMap(customer))
+        .toList();
   }
 
   double getTotal() {
@@ -77,7 +68,6 @@ class _SaleScreenState extends State<SaleScreen> {
   }
 
   Widget buildCustomerDropdown() {
-    // Criar um item com valor nulo para representar "Selecione"
     CustomerModel? defaultCustomer = null;
 
     return Container(
@@ -114,7 +104,7 @@ class _SaleScreenState extends State<SaleScreen> {
       width: 300,
       height: 50,
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.blue),
+        border: Border.all(color: Color(0xFF6D6AFC)),
         borderRadius: BorderRadius.circular(5.0),
       ),
       child: DropdownButton<CustomerModel>(
@@ -140,7 +130,7 @@ class _SaleScreenState extends State<SaleScreen> {
     );
   }
 
-  Widget buildProductCard(Product product) {
+  Widget buildProductCard(ProductModel product) {
     return Card(
       margin: EdgeInsets.all(8.0),
       child: Column(
@@ -151,7 +141,7 @@ class _SaleScreenState extends State<SaleScreen> {
               style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             ),
             subtitle: Text('${product.description}'),
-            tileColor: Colors.blue[50],
+            tileColor: Color.fromARGB(61, 108, 106, 252),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -174,7 +164,7 @@ class _SaleScreenState extends State<SaleScreen> {
     );
   }
 
-  Widget buildPriceInput(Product product) {
+  Widget buildPriceInput(ProductModel product) {
     return Padding(
       padding: EdgeInsets.only(left: 20.0),
       child: Row(
@@ -197,7 +187,7 @@ class _SaleScreenState extends State<SaleScreen> {
     );
   }
 
-  Widget buildQuantityControls(Product product) {
+  Widget buildQuantityControls(ProductModel product) {
     return Row(
       children: [
         Text('Quantidade: '),
@@ -241,7 +231,7 @@ class _SaleScreenState extends State<SaleScreen> {
                 Text(
                   'Selecione o Cliente:',
                   style: TextStyle(
-                    fontSize: 16.0,
+                    fontSize: 20.0,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -252,12 +242,10 @@ class _SaleScreenState extends State<SaleScreen> {
                       hintText: 'Pesquisar cliente',
                     ),
                     onTap: () {
-                      // Limpe a caixa de texto quando o usuário tocar no dropdown
                       _customerController.clear();
                     },
                   ),
                   suggestionsCallback: (pattern) async {
-                    // Retorna a lista de clientes que coincidem com o padrão de pesquisa
                     return customers.where((customer) => customer.name
                         .toLowerCase()
                         .contains(pattern.toLowerCase()));
@@ -278,7 +266,7 @@ class _SaleScreenState extends State<SaleScreen> {
             ),
           ),
           Text(
-            'Produtos', // Legenda para os cards de produtos
+            'Produtos',
             style: TextStyle(
               fontSize: 18.0,
               fontWeight: FontWeight.bold,
@@ -297,20 +285,7 @@ class _SaleScreenState extends State<SaleScreen> {
             padding: const EdgeInsets.only(bottom: 20),
             child: Column(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Venda Fiado'),
-                    Checkbox(
-                      value: isCredit,
-                      onChanged: (value) {
-                        setState(() {
-                          isCredit = value ?? false;
-                        });
-                      },
-                    ),
-                  ],
-                ),
+                SizedBox(height: 20.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -321,55 +296,103 @@ class _SaleScreenState extends State<SaleScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 15.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Venda Fiado'),
+                    Checkbox(
+                      value: isCredit == 0 ? false : true,
+                      onChanged: (value) {
+                        setState(() {
+                          isCredit = value! ? 1 : 0;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+                if (isCredit ==
+                    1) // Mostra o calendário se 'Venda Fiado' estiver marcado.
+                  Column(
+                    children: [
+                      buildDatePicker(
+                          context), // Chama a função que mostra o DatePicker.
+                    ],
+                  ),
                 ElevatedButton(
                   onPressed: () async {
-                    // 1. Calcular o total da venda
-                    double totalSalePrice = getTotal();
+                    if (widget.selectedCustomer == null) {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text('Aviso'),
+                            content: Text(
+                                'Por favor, selecione um cliente para a venda.'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('OK'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } else if (getTotal() <= 0) {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text('Aviso'),
+                            content: Text(
+                                'Pelo menos um produto deve ser selecionado para efetuar a venda.'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('OK'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } else {
+                      double totalSalePrice = getTotal();
 
-                    // 2. Criar uma instância da classe Sale
-                    final sale = Sale(
-                      id: 0, // O ID será gerado automaticamente no banco de dados
-                      customerId: widget
-                          .selectedCustomer!.id, // ID do cliente selecionado
-                      totalPrice: totalSalePrice,
-                      saleDate: DateTime.now(), // Use a data atual
-                      isCredit:
-                          isCredit, // Defina com base na seleção do usuário
-                      dueDate: isCredit
-                          ? DateTime.now().add(Duration(days: 30))
-                          : null, // Defina a data de pagamento, se aplicável
-                    );
-
-                    // 3. Inserir a venda no banco de dados
-                    final saleId =
-                        await SaleDatabase.instance.insertSale(sale.toMap());
-
-                    // Inserir os itens da venda no banco de dados
-                    for (final product in selectedProducts) {
-                      final saleItem = SaleItem(
-                        id: 0, // O ID será gerado automaticamente no banco de dados
-                        saleId: saleId,
-                        productId: product.productId, // ID do produto vendido
-                        quantity: product.quantity,
-                        itemPrice: product.price,
-                        discountItemPrice:
-                            0.0, // Defina o desconto, se aplicável
+                      final sale = Sale(
+                        customerId: widget.selectedCustomer!.id,
+                        totalPrice: totalSalePrice,
+                        saleDate: DateTime.now(),
+                        isCredit: isCredit,
+                        dueDate: dueDate,
                       );
 
-                      await SaleDatabase.instance
-                          .insertSaleItem(saleItem.toMap());
+                      final saleId =
+                          await SaleDatabase.instance.insertSale(sale.toMap());
+
+                      for (final product in selectedProducts) {
+                        final saleItem = SaleItem(
+                          saleId: saleId,
+                          productId: product.id,
+                          quantity: product.quantity,
+                          itemPrice: product.price,
+                          discountItemPrice: 0.0,
+                        );
+
+                        await SaleDatabase.instance
+                            .insertSaleItem(saleItem.toMap());
+                      }
+
+                      selectedProducts.clear();
+
+                      setState(() {
+                        isCredit = 0;
+                      });
+
+                      handleSaleCompletion();
                     }
-
-                    // Limpar a lista de produtos selecionados
-                    selectedProducts.clear();
-
-                    // Reinicializar o valor total
-                    setState(() {
-                      isCredit = false;
-                    });
-
-                    // Atualizar a interface do usuário, se necessário
                   },
                   child: Text('Finalizar Venda'),
                 )
@@ -378,6 +401,45 @@ class _SaleScreenState extends State<SaleScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  bool canCompleteSale() {
+    return widget.selectedCustomer != null && getTotal() > 0.0;
+  }
+
+  void handleSaleCompletion() async {
+    // Redirecionar o usuário para a tela de sucesso
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SuccessScreen()),
+    );
+
+    // Aguardar 2 segundos antes de redirecionar para a tela de controle geral
+    await Future.delayed(Duration(seconds: 2));
+
+    // Redirecionar o usuário para a tela de controle geral
+    Navigator.popUntil(context, (route) => route.isFirst);
+  }
+
+  Widget buildDatePicker(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () async {
+        DateTime? selectedDate = await showDatePicker(
+          context: context,
+          initialDate: DateTime.now().add(Duration(days: 30)),
+          firstDate: DateTime.now(),
+          lastDate: DateTime.now().add(Duration(days: 365)),
+        );
+
+        if (selectedDate != null) {
+          setState(() {
+            dueDate = selectedDate;
+            isDateSelected = true;
+          });
+        }
+      },
+      child: Text('Selecionar Data de Pagamento Prevista'),
     );
   }
 }

@@ -17,6 +17,8 @@ class _ProductRegistrationScreenState extends State<ProductRegistrationScreen> {
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _priceController = TextEditingController();
+  final _quantityController =
+      TextEditingController(); // Novo campo de quantidade
   int _selectedCategoryId = 0; // Categoria padrão selecionada.
   int _selectedSupplierId = 0; // Fornecedor padrão selecionado.
 
@@ -112,7 +114,6 @@ class _ProductRegistrationScreenState extends State<ProductRegistrationScreen> {
                   },
                   onChanged: (value) {
                     if (value.isNotEmpty) {
-                      // Remova vírgulas e pontos para analisar como número
                       double amount =
                           double.parse(value.replaceAll(RegExp(r'[^\d]'), '')) /
                               100;
@@ -162,26 +163,76 @@ class _ProductRegistrationScreenState extends State<ProductRegistrationScreen> {
                     },
                   ),
                 ),
-                SizedBox(height: 20.0),
-                ElevatedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      Map<String, dynamic> product = {
-                        'name': _nameController.text,
-                        'description': _descriptionController.text,
-                        'price': double.parse(_priceController.text
-                                .replaceAll(RegExp(r'[^\d]'), '')) /
-                            100,
-                        'category_id': _selectedCategoryId,
-                        'supplier_id': _selectedSupplierId,
-                      };
+                SizedBox(height: 15.0),
+                Row(
+                  children: [
+                    Text('Quantidade: '),
+                    IconButton(
+                      icon: Icon(Icons.remove),
+                      onPressed: () {
+                        int quantity =
+                            int.tryParse(_quantityController.text) ?? 0;
+                        if (quantity > 0) {
+                          setState(() {
+                            quantity--;
+                            _quantityController.text = quantity.toString();
+                          });
+                        }
+                      },
+                    ),
+                    Expanded(
+                      child: TextFormField(
+                        controller: _quantityController,
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.add),
+                      onPressed: () {
+                        int quantity =
+                            int.tryParse(_quantityController.text) ?? 0;
+                        setState(() {
+                          quantity++;
+                          _quantityController.text = quantity.toString();
+                        });
+                      },
+                    ),
+                  ],
+                ),
+                SizedBox(height: 170.0),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    margin: EdgeInsets.only(bottom: 20.0),
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          Map<String, dynamic> product = {
+                            'name': _nameController.text,
+                            'description': _descriptionController.text,
+                            'price': double.parse(_priceController.text
+                                    .replaceAll(RegExp(r'[^\d]'), '')) /
+                                100,
+                            'category_id': _selectedCategoryId,
+                            'supplier_id': _selectedSupplierId,
+                            'quantity':
+                                int.tryParse(_quantityController.text) ?? 0,
+                          };
 
-                      await ProductDatabase.instance.insertProduct(product);
-                      Navigator.of(context)
-                          .pop(); // Voltar para a tela anterior após o cadastro.
-                    }
-                  },
-                  child: Text('Adicionar Produto'),
+                          await ProductDatabase.instance.insertProduct(product);
+                          Navigator.of(context)
+                              .pop(); // Voltar para a tela anterior após o cadastro.
+                        }
+                      },
+                      child: Text('Adicionar Produto'),
+                    ),
+                  ),
                 ),
               ],
             ),

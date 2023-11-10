@@ -5,14 +5,14 @@ class CustomerModel {
   String name;
   String email;
   String phoneNumber;
-  String address;
+  String? address;
 
   CustomerModel({
     required this.id,
     required this.name,
     required this.email,
     required this.phoneNumber,
-    required this.address,
+    this.address,
   });
 
   Map<String, dynamic> toMap() {

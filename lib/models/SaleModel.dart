@@ -1,15 +1,14 @@
 class Sale {
-  int id;
+  int? id;
   int customerId; // ID do cliente que fez a compra
   double totalPrice; // Preço total sem desconto
   DateTime saleDate;
-  bool isCredit; // Campo para verificar se é "fiado"
+  int isCredit; // Campo para verificar se é "fiado"
   DateTime? paymentDate;
-
   DateTime? dueDate; // Campo de data de pagamento (fiado)
 
   Sale({
-    required this.id,
+    this.id,
     required this.customerId,
     required this.totalPrice,
     required this.saleDate,
@@ -49,10 +48,28 @@ class Sale {
           : null, // Adicionado campo de data de pagamento (fiado)
     );
   }
+
+  factory Sale.fromMapWithTotalPrice(Map<String, dynamic> map) {
+    return Sale(
+      id: map['id'],
+      customerId: map['customer_id'],
+      totalPrice: map[
+          'total_price'], // Definido como 0.0 porque o preço total agora é calculado nos itens
+      saleDate: DateTime.parse(map['sale_date']),
+      isCredit:
+          map['is_credit'], // Adicionado campo para verificar se é "fiado"
+      paymentDate: map['payment_date'] != null
+          ? DateTime.parse(map['payment_date'])
+          : null,
+      dueDate: map['due_date'] != null
+          ? DateTime.parse(map['due_date'])
+          : null, // Adicionado campo de data de pagamento (fiado)
+    );
+  }
 }
 
 class SaleItem {
-  int id; // ID do item de venda
+  int? id; // ID do item de venda
   int saleId; // ID da venda à qual o item está associado
   int productId; // ID do produto vendido
   int quantity; // Quantidade vendida
@@ -60,7 +77,7 @@ class SaleItem {
   double discountItemPrice; // Campo de desconto
 
   SaleItem({
-    required this.id,
+    this.id,
     required this.saleId,
     required this.productId,
     required this.quantity,

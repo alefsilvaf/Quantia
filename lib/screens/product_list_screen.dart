@@ -6,6 +6,7 @@ import '../database/supplier_database.dart';
 import '../models/ProductModel.dart';
 import 'product_registration_screen.dart';
 import 'product_edit_screen.dart';
+import 'package:flutter/material.dart';
 
 class ProductListScreen extends StatefulWidget {
   @override
@@ -14,6 +15,7 @@ class ProductListScreen extends StatefulWidget {
 
 class _ProductListScreenState extends State<ProductListScreen> {
   List<ProductModel> _products = [];
+  TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -22,35 +24,16 @@ class _ProductListScreenState extends State<ProductListScreen> {
   }
 
   _refreshProductList() async {
-    var products = await ProductDatabase.instance.getProducts();
-    var updatedProducts = <ProductModel>[];
+    final searchTerm = _searchController.text.trim().toLowerCase();
+    final filteredProductsData =
+        await ProductDatabase.instance.searchProducts(searchTerm);
 
-    for (var productMap in products) {
-      var updatedProductMap = Map<String, dynamic>.from(productMap);
+    final filteredProducts = filteredProductsData
+        .map((productData) => ProductModel.fromMap(productData))
+        .toList();
 
-      final categoryId = productMap['category_id'];
-      if (categoryId != null) {
-        final categoryName =
-            await ProductCategoryDatabase.instance.getCategoryName(categoryId);
-
-        updatedProductMap['category_name'] = categoryName;
-      }
-
-      final supplierId = productMap['supplier_id'];
-      if (supplierId != null) {
-        final supplierName =
-            await SupplierDatabase.instance.getSupplierName(supplierId);
-
-        updatedProductMap['supplier_name'] = supplierName;
-      }
-
-      final productModel = ProductModel.fromMap(updatedProductMap);
-      updatedProducts.add(productModel);
-    }
-
-    // Agora, a lista de produtos atualizada deve conter os nomes de categoria e fornecedor corretamente.
     setState(() {
-      _products = updatedProducts;
+      _products = filteredProducts;
     });
   }
 
@@ -60,6 +43,25 @@ class _ProductListScreenState extends State<ProductListScreen> {
       appBar: AppBar(title: Text('Lista de Produtos')),
       body: Column(
         children: [
+          Padding(
+            padding: EdgeInsets.all(16.0),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                labelText: 'Pesquisar produtos',
+                suffixIcon: IconButton(
+                  icon: Icon(Icons.clear),
+                  onPressed: () {
+                    _searchController.clear();
+                    _refreshProductList();
+                  },
+                ),
+              ),
+              onChanged: (value) {
+                _refreshProductList();
+              },
+            ),
+          ),
           Expanded(
             child: _products.isEmpty
                 ? Center(
@@ -69,32 +71,42 @@ class _ProductListScreenState extends State<ProductListScreen> {
                     itemCount: _products.length,
                     itemBuilder: (context, index) {
                       return Card(
+                        margin: EdgeInsets.symmetric(
+                          horizontal: 16.0,
+                          vertical: 5.0,
+                        ),
                         child: ListTile(
-                          title: Text(
-                            _products[index].name.toUpperCase(),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          title: Row(
                             children: [
-                              Text(
-                                  'Descrição: ${_products[index].description}'),
-                              Text('Preço: ${_products[index].price}'),
-                              Text(
-                                'Categoria: ${_products[index].categoryName ?? 'Indefinida'}',
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      _products[index].name.toUpperCase(),
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20.0,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Descrição: ${_products[index].description}',
+                                    ),
+                                    Text('Preço: ${_products[index].price}'),
+                                    Text(
+                                      'Quantidade: ${_products[index].quantity != null && _products[index].quantity as int > 0 ? _products[index].quantity.toString() : '-'}',
+                                    ),
+                                    Text(
+                                      'Categoria: ${_products[index].categoryName ?? 'Indefinida'}',
+                                    ),
+                                    Text(
+                                      'Fornecedor: ${_products[index].supplierName ?? 'Indefinido'}',
+                                    ),
+                                  ],
+                                ),
                               ),
-                              Text(
-                                'Fornecedor: ${_products[index].supplierName ?? 'Indefinido'}',
-                              ),
+                              _buildEditButton(index),
                             ],
-                          ),
-                          trailing: InkWell(
-                            onTap: () {
-                              _editProduct(_products[index]);
-                            },
-                            child: Icon(Icons.edit),
                           ),
                         ),
                       );
@@ -102,18 +114,18 @@ class _ProductListScreenState extends State<ProductListScreen> {
                   ),
           ),
           Container(
-            margin: EdgeInsets.all(16.0), // Adicione margens ao redor do botão
+            margin: EdgeInsets.all(16.0),
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
-                  borderRadius:
-                      BorderRadius.circular(20.0), // Arredonda o botão
+                  borderRadius: BorderRadius.circular(20.0),
                 ),
                 padding: EdgeInsets.only(
-                    bottom: 10,
-                    top: 10,
-                    left: 45,
-                    right: 45), // Adicione preenchimento ao botão
+                  bottom: 10,
+                  top: 10,
+                  left: 45,
+                  right: 45,
+                ),
               ),
               onPressed: () async {
                 await Navigator.push(
@@ -132,6 +144,18 @@ class _ProductListScreenState extends State<ProductListScreen> {
     );
   }
 
+  Widget _buildEditButton(int index) {
+    return InkWell(
+      onTap: () {
+        _editProduct(_products[index]);
+      },
+      child: Container(
+        padding: EdgeInsets.all(8.0),
+        child: Icon(Icons.edit),
+      ),
+    );
+  }
+
   void _editProduct(ProductModel product) {
     Navigator.push(
       context,
@@ -139,7 +163,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
         builder: (context) => ProductEditScreen(product: product),
       ),
     ).then((_) {
-      _refreshProductList(); // Atualize a lista após a edição
+      _refreshProductList();
     });
   }
 }

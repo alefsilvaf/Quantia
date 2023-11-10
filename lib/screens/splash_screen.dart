@@ -19,7 +19,7 @@ class SplashScreen extends StatelessWidget {
     });
 
     return Scaffold(
-      backgroundColor: Colors.blue,
+      backgroundColor: Color(0xFF6D6AFC),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -34,11 +34,14 @@ class SplashScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 16),
-            Text(
-              'Meu Aplicativo de Controle de Estoque',
-              style: TextStyle(
-                fontSize: 24,
-                color: Colors.white,
+            Center(
+              // Adicione um novo Center aqui
+              child: Text(
+                'Meu Aplicativo de Gestão',
+                style: TextStyle(
+                  fontSize: 24,
+                  color: Colors.white,
+                ),
               ),
             ),
             SizedBox(height: 40),

@@ -1,3 +1,4 @@
+import '../models/SaleModel.dart';
 import 'database_helper.dart';
 import 'database_utils.dart';
 
@@ -15,7 +16,7 @@ class SaleDatabase {
 
     if (!tableExists) {
       await DatabaseHelper.instance.createTable(tableName, [
-        'id INTEGER PRIMARY KEY',
+        'id INTEGER PRIMARY KEY AUTOINCREMENT',
         'customer_id INTEGER NOT NULL',
         'total_price REAL NOT NULL',
         'is_credit INTEGER', // Adicione um campo para indicar se a venda é a crédito
@@ -23,28 +24,28 @@ class SaleDatabase {
         'due_date TEXT',
         'sale_date TEXT NOT NULL',
       ]);
-    }
 
-    // Crie a tabela para itens de venda
-    await DatabaseHelper.instance.createTable(saleItemsTable, [
-      'id INTEGER PRIMARY KEY',
-      'sale_id INTEGER NOT NULL', // Associação com a venda
-      'product_id INTEGER NOT NULL', // ID do produto vendido
-      'quantity REAL NOT NULL',
-      'item_price REAL NOT NULL',
-      'discount_item_price REAL', // Adicione um campo para desconto
-    ]);
+      // Crie a tabela para itens de venda
+      await DatabaseHelper.instance.createTable(saleItemsTable, [
+        'id INTEGER PRIMARY KEY AUTOINCREMENT',
+        'sale_id INTEGER NOT NULL', // Associação com a venda
+        'product_id INTEGER NOT NULL', // ID do produto vendido
+        'quantity REAL NOT NULL',
+        'item_price REAL NOT NULL',
+        'discount_item_price REAL', // Adicione um campo para desconto
+      ]);
+    }
   }
 
   Future<int> insertSale(Map<String, dynamic> sale) async {
-    createSaleTableIfNotExists();
+    await createSaleTableIfNotExists();
     final db = await DatabaseHelper.instance.database;
     return await db.insert(tableName, sale);
   }
 
   // Adicione esta função para inserir uma venda com desconto, crédito e data de pagamento
   Future<int> insertSaleWithDiscount(Map<String, dynamic> sale) async {
-    createSaleTableIfNotExists();
+    await createSaleTableIfNotExists();
     final db = await DatabaseHelper.instance.database;
     return await db.insert(tableName, sale);
   }
@@ -78,8 +79,37 @@ class SaleDatabase {
   }
 
   Future<int> insertSaleItem(Map<String, dynamic> saleItem) async {
-    createSaleTableIfNotExists();
+    await createSaleTableIfNotExists();
     final db = await DatabaseHelper.instance.database;
     return await db.insert(saleItemsTable, saleItem);
+  }
+
+  Future<List<Map<String, dynamic>>> getSalesWithoutCreditOption() async {
+    final db = await DatabaseHelper.instance.database;
+    final now = DateTime.now();
+    final startDate = DateTime(now.year, now.month, 1);
+    final endDate = DateTime(now.year, now.month + 1, 0);
+
+    return await db.query(
+      tableName,
+      where: 'is_credit = ? ',
+      whereArgs: [
+        0,
+        //startDate.toIso8601String(),
+        //endDate.toIso8601String()
+      ],
+    );
+  }
+
+  Future<String> getCustomerNameBySale(Sale sale) async {
+    final db = await DatabaseHelper.instance.database;
+    final result = await db.rawQuery('''
+    SELECT customers.name AS customer_name
+    FROM sales
+    INNER JOIN customers ON sales.customer_id = customers.id
+    WHERE sales.id = ?
+  ''', [sale.id]);
+
+    return result.isNotEmpty ? result.first['customer_name'].toString() : '';
   }
 }
