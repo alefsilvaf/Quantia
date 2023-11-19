@@ -6,6 +6,7 @@ class Sale {
   int isCredit; // Campo para verificar se é "fiado"
   DateTime? paymentDate;
   DateTime? dueDate; // Campo de data de pagamento (fiado)
+  String? customerName;
 
   Sale({
     this.id,
@@ -15,9 +16,25 @@ class Sale {
     required this.isCredit, // Adicionado campo para verificar se é "fiado"
     this.paymentDate,
     this.dueDate, // Adicionado campo de data de pagamento (fiado)
+    this.customerName,
   });
 
   Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'customer_id': customerId,
+      'total_price': totalPrice, // Removido o campo 'totalPrice' dos produtos
+      'sale_date': saleDate.toIso8601String(),
+      'is_credit': isCredit, // Adicionado campo para verificar se é "fiado"
+      'payment_date': paymentDate?.toIso8601String(),
+
+      'due_date': dueDate
+          ?.toIso8601String(), // Adicionado campo de data de pagamento (fiado)
+      'customer_name': customerName,
+    };
+  }
+
+  Map<String, dynamic> toMapWithoutCustomerName() {
     return {
       'id': id,
       'customer_id': customerId,
@@ -46,6 +63,7 @@ class Sale {
       dueDate: map['due_date'] != null
           ? DateTime.parse(map['due_date'])
           : null, // Adicionado campo de data de pagamento (fiado)
+      customerName: map['customer_name'],
     );
   }
 
@@ -64,6 +82,7 @@ class Sale {
       dueDate: map['due_date'] != null
           ? DateTime.parse(map['due_date'])
           : null, // Adicionado campo de data de pagamento (fiado)
+      customerName: map['customer_name'],
     );
   }
 }

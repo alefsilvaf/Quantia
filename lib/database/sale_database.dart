@@ -92,12 +92,8 @@ class SaleDatabase {
 
     return await db.query(
       tableName,
-      where: 'is_credit = ? ',
-      whereArgs: [
-        0,
-        //startDate.toIso8601String(),
-        //endDate.toIso8601String()
-      ],
+      where: 'is_credit = ? AND sale_date between ? AND ? ',
+      whereArgs: [0, startDate.toIso8601String(), endDate.toIso8601String()],
     );
   }
 
@@ -111,5 +107,15 @@ class SaleDatabase {
   ''', [sale.id]);
 
     return result.isNotEmpty ? result.first['customer_name'].toString() : '';
+  }
+
+  Future<List<Map<String, dynamic>>> getSalesFiado() async {
+    final db = await DatabaseHelper.instance.database;
+    return await db.rawQuery('''
+    SELECT sales.*, customers.name AS customer_name
+    FROM sales
+    INNER JOIN customers ON sales.customer_id = customers.id
+    WHERE sales.is_credit = 1 AND sales.payment_date is null
+  ''');
   }
 }

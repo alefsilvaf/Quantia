@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:projeto_tcc/database/customer_database.dart';
 import 'package:projeto_tcc/screens/general_control_screen.dart';
 
 import '../database/capital_transaction_database.dart';
@@ -7,6 +8,7 @@ import '../database/sale_database.dart';
 import '../models/CapitalTransactionModel.dart';
 import '../models/SaleModel.dart';
 import '../models/TransactionInfoModel.dart';
+import 'add_transaction_screen.dart';
 
 class CapitalTransactionListScreen extends StatefulWidget {
   @override
@@ -48,17 +50,16 @@ class _CapitalTransactionListScreenState
 
     for (final saleData in sales) {
       final sale = Sale.fromMapWithTotalPrice(saleData);
-      final customerName =
+      var customerNameFinal =
           await SaleDatabase.instance.getCustomerNameBySale(sale);
       final saleAmount = sale.totalPrice;
-      final saleDescription =
-          '\nVenda feita para $customerName na data ${_dateFormat.format(sale.saleDate)}';
+      final saleDescription = "\nVenda feita para $customerNameFinal";
 
       transactions.add(TransactionInfo(
         id: 0, // Seu ID personalizado
         description: saleDescription,
         amount: saleAmount,
-        transactionDate: sale.paymentDate ??
+        transactionDate: sale.saleDate ??
             DateTime.now(), // Substitua pelo campo de data desejado
         transactionType: 0, // Substitua pelo tipo de transação desejado
       ));
@@ -85,7 +86,7 @@ class _CapitalTransactionListScreenState
         .fold(0.0, (prev, curr) => prev + curr.amount);
   }
 
-  _deleteTransaction(int id) async {
+  _deleteTransaction(int? id) async {
     await CapitalTransactionDatabase.instance.deleteCapitalTransaction(id);
 
     // Remover a transação da lista _transactions
@@ -183,7 +184,8 @@ class _CapitalTransactionListScreenState
                                           ),
                                         ),
                                         Visibility(
-                                          visible: transaction.id != 0,
+                                          visible: transaction.id != 0 &&
+                                              transaction.id != null,
                                           child: IconButton(
                                             icon: Icon(Icons.delete),
                                             onPressed: () {
@@ -215,6 +217,14 @@ class _CapitalTransactionListScreenState
                 Text(
                     'Saldo Total: R\$${(totalIncome - totalExpense).toStringAsFixed(2)}',
                     style: TextStyle(fontWeight: FontWeight.bold)),
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0, left: 25),
+                  child: Text(
+                    'Você está visualizando as transações do mês atual, caso queira visualizar de outras datas, acesse o relatório de Fluxo de Caixa',
+                    style:
+                        TextStyle(fontStyle: FontStyle.italic, fontSize: 12.0),
+                  ),
+                ),
               ],
             ),
           ),
@@ -225,7 +235,7 @@ class _CapitalTransactionListScreenState
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ControleGeralScreen(),
+                    builder: (context) => AddTransactionScreen(),
                   ),
                 ).then((_) {
                   loadTransactionsAndSales();
