@@ -15,7 +15,7 @@ class CapitalTransactionDatabase {
 
     if (!tableExists) {
       await DatabaseHelper.instance.createTable(tableName, [
-        'id INTEGER PRIMARY KEY',
+        'id INTEGER PRIMARY KEY AUTOINCREMENT',
         'transaction_type INTEGER',
         'description TEXT',
         'amount REAL NOT NULL',
@@ -36,7 +36,7 @@ class CapitalTransactionDatabase {
     return await db.query(tableName);
   }
 
-  Future<int> deleteCapitalTransaction(int id) async {
+  Future<int> deleteCapitalTransaction(int? id) async {
     final db = await DatabaseHelper.instance.database;
     return await db.delete(tableName, where: 'id = ?', whereArgs: [id]);
   }

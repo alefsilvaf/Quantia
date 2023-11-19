@@ -41,6 +41,11 @@ class _SaleScreenState extends State<SaleScreen> {
     });
   }
 
+  void updateSelectedProducts() {
+    selectedProducts.clear();
+    selectedProducts.addAll(products.where((product) => product.quantity > 0));
+  }
+
   Future<void> initializeCustomers() async {
     customers = await loadCustomers();
   }
@@ -132,6 +137,9 @@ class _SaleScreenState extends State<SaleScreen> {
 
   Widget buildProductCard(ProductModel product) {
     return Card(
+      key: ValueKey(
+          product), // Adicione um ValueKey para garantir a reconstrução adequada
+
       margin: EdgeInsets.all(8.0),
       child: Column(
         children: [
@@ -207,6 +215,7 @@ class _SaleScreenState extends State<SaleScreen> {
           onPressed: () {
             setState(() {
               product.quantity++;
+              updateSelectedProducts();
             });
           },
         ),
@@ -369,8 +378,8 @@ class _SaleScreenState extends State<SaleScreen> {
                         dueDate: dueDate,
                       );
 
-                      final saleId =
-                          await SaleDatabase.instance.insertSale(sale.toMap());
+                      final saleId = await SaleDatabase.instance
+                          .insertSale(sale.toMapWithoutCustomerName());
 
                       for (final product in selectedProducts) {
                         final saleItem = SaleItem(

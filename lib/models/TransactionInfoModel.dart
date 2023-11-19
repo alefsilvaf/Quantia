@@ -1,12 +1,12 @@
 class TransactionInfo {
-  final int id;
+  final int? id;
   final String description;
   final double amount;
   final DateTime transactionDate;
   final int transactionType;
 
   TransactionInfo({
-    required this.id,
+    this.id,
     required this.description,
     required this.amount,
     required this.transactionDate,

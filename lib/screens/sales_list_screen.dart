@@ -40,7 +40,7 @@ class _SalesListScreenState extends State<SalesListScreen> {
             title: Text(
                 'Venda #${sale['id']}'), // Personalize conforme sua estrutura de dados
             subtitle: Text(
-                'Total: R\$${sale['total_price']} Data Venda: ${sale['sale_date']} Data Venda Prog: ${sale['due_date']}'),
+                'Total: R\$${sale['total_price']} \nData Venda: ${sale['sale_date']} \nData Venda Prog: ${sale['due_date']} \n Data Pagamento: ${sale['payment_date']}'),
             onTap: () {
               // Navegue para a tela de detalhes da venda ou realize a ação desejada
               // Você pode passar o ID da venda para a próxima tela se necessário

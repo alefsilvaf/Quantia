@@ -229,6 +229,20 @@ class _ProductRegistrationScreenState extends State<ProductRegistrationScreen> {
                           Navigator.of(context)
                               .pop(); // Voltar para a tela anterior após o cadastro.
                         }
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: Colors.green,
+                            content: Center(
+                              child: Text(
+                                'Produto adicionado com sucesso!',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
                       },
                       child: Text('Adicionar Produto'),
                     ),
