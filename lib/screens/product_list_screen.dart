@@ -26,7 +26,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
   _refreshProductList() async {
     final searchTerm = _searchController.text.trim().toLowerCase();
     final filteredProductsData =
-        await ProductDatabase.instance.searchProducts(searchTerm);
+        await ProductDatabase.instance.searchAndFetchProductDetails(searchTerm);
 
     final filteredProducts = filteredProductsData
         .map((productData) => ProductModel.fromMap(productData))

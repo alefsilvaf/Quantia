@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../database/sale_database.dart'; // Importe sua classe de banco de dados de vendas aqui
+import '../database/sale_database.dart';
 
 class SalesListScreen extends StatefulWidget {
   @override
@@ -8,7 +8,7 @@ class SalesListScreen extends StatefulWidget {
 }
 
 class _SalesListScreenState extends State<SalesListScreen> {
-  List<Map<String, dynamic>> sales = []; // Lista para armazenar as vendas
+  List<Map<String, dynamic>> sales = [];
 
   @override
   void initState() {
@@ -20,8 +20,14 @@ class _SalesListScreenState extends State<SalesListScreen> {
     final saleDatabase = SaleDatabase.instance;
     final loadedSales = await saleDatabase.getSales();
 
+    // Crie uma cópia mutável da lista antes de ordenar
+    List<Map<String, dynamic>> mutableSales = List.from(loadedSales);
+
+    // Ordenar as vendas em ordem decrescente pela data de venda
+    mutableSales.sort((a, b) => b['sale_date'].compareTo(a['sale_date']));
+
     setState(() {
-      sales = loadedSales;
+      sales = mutableSales;
     });
   }
 
@@ -36,15 +42,23 @@ class _SalesListScreenState extends State<SalesListScreen> {
         itemBuilder: (context, index) {
           final sale = sales[index];
 
-          return ListTile(
-            title: Text(
-                'Venda #${sale['id']}'), // Personalize conforme sua estrutura de dados
-            subtitle: Text(
-                'Total: R\$${sale['total_price']} \nData Venda: ${sale['sale_date']} \nData Venda Prog: ${sale['due_date']} \n Data Pagamento: ${sale['payment_date']}'),
-            onTap: () {
-              // Navegue para a tela de detalhes da venda ou realize a ação desejada
-              // Você pode passar o ID da venda para a próxima tela se necessário
-            },
+          return Card(
+            margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: ListTile(
+              title: Text('Venda #${sale['id']}'),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Total: R\$${sale['total_price']}',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text('Data Venda: ${sale['sale_date'] ?? 'Não informada'}'),
+                  Text(
+                      'Data Previsão Pagamento: ${sale['due_date'] ?? 'Não informada'}'),
+                ],
+              ),
+            ),
           );
         },
       ),

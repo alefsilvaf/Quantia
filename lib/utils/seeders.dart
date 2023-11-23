@@ -50,50 +50,47 @@ class DatabaseSeeder {
       'email': 'cliente5@example.com',
       'phone_number': '35997010731'
     });
-    // Adicione mais clientes conforme necessário
   }
 
   Future<void> _seedCategoryProducts() async {
-    // Inserir produtos fictícios
     await database.insert('product_categories', {
       'name': 'Tipo 1',
-      'description': 'Um produto, querida',
+      'description': 'Produtos de aço',
     });
     await database.insert('product_categories', {
       'name': 'Tipo 2',
-      'description': 'Querida',
+      'description': 'Produtos à base de alumínio',
     });
-    await database.insert('product_categories',
-        {'name': 'Tipo 3', 'description': 'Um babadeiro, querida'});
+    await database.insert(
+        'product_categories', {'name': 'Tipo 3', 'description': 'Promocional'});
     await database.insert('product_categories', {
       'name': 'Tipo 4',
-      'description': 'Lorem sandkjasndkjnja',
+      'description': 'Natalino',
     });
     await database.insert('product_categories', {
       'name': 'Tipo 5',
-      'description': 'Megan TheStallion rainha do rap',
+      'description': 'Cor branca',
     });
     await database.insert('product_categories', {
       'name': 'Tipo 6',
-      'description': 'Um produto babadeiro, querida',
+      'description': 'Cor Cinza',
     });
-    // Adicione mais produtos conforme necessário
   }
 
   Future<void> _seedSuppliers() async {
     // Inserir produtos fictícios
     await database.insert('suppliers', {
-      'name': 'Tipo 1',
+      'name': 'Fornecedor 1',
       'phone_number': '35997010731',
     });
     await database.insert('suppliers', {
-      'name': 'Tipo 2',
+      'name': 'Fornecedor 2',
       'phone_number': '35997010731',
     });
-    await database
-        .insert('suppliers', {'name': 'Tipo 3', 'phone_number': '35997010731'});
+    await database.insert(
+        'suppliers', {'name': 'Fornecedor 3', 'phone_number': '35997010731'});
     await database.insert('suppliers', {
-      'name': 'Tipo 4',
+      'name': 'Fornecedor 4',
       'phone_number': '35997010731',
     });
 
@@ -102,19 +99,39 @@ class DatabaseSeeder {
 
   Future<void> _seedProducts() async {
     // Inserir produtos fictícios
-    await database.insert(
-        'products', {'name': 'Produto 1', 'price': 10.0, 'quantity': 0});
-    await database.insert(
-        'products', {'name': 'Produto 2', 'price': 20.0, 'quantity': 0});
-    await database.insert(
-        'products', {'name': 'Produto 3', 'price': 20.0, 'quantity': 0});
-    await database.insert(
-        'products', {'name': 'Produto 4', 'price': 20.0, 'quantity': 0});
-    await database.insert(
-        'products', {'name': 'Produto 5', 'price': 20.0, 'quantity': 0});
+    await database.insert('products', {
+      'name': 'Produto 1',
+      'description': 'Fórmula com essência de baunilha',
+      'price': 10.0,
+      'quantity': 0
+    });
+    await database.insert('products', {
+      'name': 'Produto 2',
+      'description': 'Linha Premium',
+      'price': 20.0,
+      'quantity': 0
+    });
+    await database.insert('products', {
+      'name': 'Produto 3',
+      'description': 'Linha Baby',
+      'price': 20.0,
+      'quantity': 0
+    });
+    await database.insert('products', {
+      'name': 'Produto 4',
+      'description': 'Para Adultos',
+      'price': 20.0,
+      'quantity': 0
+    });
+    await database.insert('products', {
+      'name': 'Produto 5',
+      'description': 'Simple Care',
+      'price': 20.0,
+      'quantity': 0
+    });
     await database.insert('products', {
       'name': 'Produto 6',
-      'description': 'Um produto babadeiro, querida',
+      'description': 'Importado da Irlanda',
       'price': 20.0,
       'quantity': 0
     });
@@ -134,10 +151,19 @@ class DatabaseSeeder {
     await database.insert('sales', {
       'customer_id': 2, // ID do cliente fictício 2
       'total_price': 25.0,
-      'sale_date': '2023-10-31T14:30:00',
+      'sale_date': '2023-11-15T14:30:00',
       'is_credit': 0, // Exemplo de campo "isCredit" definido como false
       'payment_date': null, // Exemplo de campo "paymentDate" definido como null
       'due_date': null, // Exemplo de campo "dueDate" definido como null
+    });
+    await database.insert('sales', {
+      'customer_id': 2, // ID do cliente fictício 2
+      'total_price': 25.0,
+      'sale_date': '2023-11-15T14:30:00',
+      'is_credit': 1, // Exemplo de campo "isCredit" definido como false
+      'payment_date': null, // Exemplo de campo "paymentDate" definido como null
+      'due_date':
+          '2023-11-30T14:30:00', // Exemplo de campo "dueDate" definido como null
     });
     // Adicione mais vendas conforme necessário
   }
@@ -148,20 +174,20 @@ class DatabaseSeeder {
         .createCapitalTransactionTableIfNotExists();
     await database.insert('capital_transactions', {
       'transaction_type': TransactionType.Entrada.index,
-      'description': 'Pão',
+      'description': 'Comissão de Venda Sobre Produto X',
       'amount': 100.0,
       'transaction_date': '2023-11-05T15:30:00',
       // Outros campos relevantes, como descrição ou categoria, se aplicável.
     });
     await database.insert('capital_transactions', {
       'transaction_type': TransactionType.Saida.index,
-      'description': 'Pão',
+      'description': 'Pagamento de Manutenção de Máquina',
       'amount': 50.0,
       'transaction_date': '2023-11-06T10:15:00',
     });
     await database.insert('capital_transactions', {
       'transaction_type': TransactionType.Entrada.index,
-      'description': 'Pão',
+      'description': 'Investimento de Parceiros',
       'amount': 75.0,
       'transaction_date': '2023-11-07T14:45:00',
     });
