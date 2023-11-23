@@ -1,6 +1,8 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:projeto_tcc/screens/customer_list_screen.dart';
+import 'package:projeto_tcc/screens/sales_list_screen.dart';
 import '../database/customer_database.dart';
 import '../database/product_database.dart';
 import '../database/sale_database.dart';
@@ -250,8 +252,11 @@ class _SaleScreenState extends State<SaleScreen> {
                     decoration: InputDecoration(
                       hintText: 'Pesquisar cliente',
                     ),
-                    onTap: () {
-                      _customerController.clear();
+                    onChanged: (text) {
+                      // Atualiza widget.selectedCustomer se o campo de texto for alterado
+                      setState(() {
+                        widget.selectedCustomer = null;
+                      });
                     },
                   ),
                   suggestionsCallback: (pattern) async {
@@ -419,16 +424,20 @@ class _SaleScreenState extends State<SaleScreen> {
 
   void handleSaleCompletion() async {
     // Redirecionar o usuário para a tela de sucesso
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => SuccessScreen()),
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => SuccessScreen(),
+      ),
     );
 
     // Aguardar 2 segundos antes de redirecionar para a tela de controle geral
     await Future.delayed(Duration(seconds: 2));
-
-    // Redirecionar o usuário para a tela de controle geral
-    Navigator.popUntil(context, (route) => route.isFirst);
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) =>
+            SalesListScreen(), // Vá para a tela de listagem de fornecedores
+      ),
+    );
   }
 
   Widget buildDatePicker(BuildContext context) {

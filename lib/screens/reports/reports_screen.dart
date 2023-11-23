@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../general_control_screen.dart';
+import 'cash_flow_screen.dart';
 import 'due_sales_screens.dart';
 
 class ReportsMenuScreen extends StatelessWidget {
@@ -26,7 +27,7 @@ class ReportsMenuScreen extends StatelessWidget {
               titulo: 'Fluxo de Caixa',
               icone: Icons.show_chart,
               cor: customColor,
-              rota: ControleGeralScreen(),
+              rota: CashFlowReportScreen(),
             ),
           ),
           Expanded(

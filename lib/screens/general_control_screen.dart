@@ -79,12 +79,6 @@ class ControleGeralScreen extends StatelessWidget {
             ),
             FuncionalidadeQuadro(
               titulo: 'Relatórios',
-              icone: Icons.analytics,
-              cor: customColor,
-              rota: SalesListScreen(),
-            ),
-            FuncionalidadeQuadro(
-              titulo: 'Relatórios',
               icone: Icons.bar_chart,
               cor: customColor,
               rota: ReportsMenuScreen(),

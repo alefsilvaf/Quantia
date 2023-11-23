@@ -63,4 +63,30 @@ class ProductDatabase {
       whereArgs: ['%$searchTerm%', '%$searchTerm%'],
     );
   }
+
+  Future<List<Map<String, dynamic>>> searchAndFetchProductDetails(
+      String searchTerm) async {
+    await createProductTableIfNotExists();
+    final db = await DatabaseHelper.instance.database;
+
+    final sql = '''
+    SELECT
+      p.*,
+      c.name AS category_name,
+      s.name AS supplier_name
+    FROM $tableName p
+    LEFT JOIN product_categories c ON p.category_id = c.id
+    LEFT JOIN suppliers s ON p.supplier_id = s.id
+    WHERE p.name LIKE ? OR p.description LIKE ? OR c.name LIKE ? OR s.name LIKE ?
+  ''';
+
+    final searchTermPattern = '%$searchTerm%';
+
+    return await db.rawQuery(sql, [
+      searchTermPattern,
+      searchTermPattern,
+      searchTermPattern,
+      searchTermPattern
+    ]);
+  }
 }

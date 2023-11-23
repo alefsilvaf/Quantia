@@ -7,6 +7,7 @@ import 'database/database_helper.dart';
 import 'database/product_category_database.dart';
 import 'database/product_database.dart';
 import 'database/supplier_database.dart';
+import 'database/user_database.dart';
 import 'utils/seeders.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -20,6 +21,9 @@ Future<void> main() async {
 }
 
 Future<void> createTablesIfNotExists() async {
+  final userDatabase = UserDatabase.instance;
+  await userDatabase.createUserTableIfNotExists();
+
   final capitalTransactionDatabase = CapitalTransactionDatabase.instance;
   await capitalTransactionDatabase.createCapitalTransactionTableIfNotExists();
 
@@ -44,6 +48,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Controle de Estoque',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primaryColor: Color(0xFF6D6AFC),
         appBarTheme: AppBarTheme(
