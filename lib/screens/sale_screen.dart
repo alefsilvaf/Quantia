@@ -313,7 +313,7 @@ class _SaleScreenState extends State<SaleScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Venda Fiado'),
+                    Text('Venda a Crédito'),
                     Checkbox(
                       value: isCredit == 0 ? false : true,
                       onChanged: (value) {
@@ -325,7 +325,7 @@ class _SaleScreenState extends State<SaleScreen> {
                   ],
                 ),
                 if (isCredit ==
-                    1) // Mostra o calendário se 'Venda Fiado' estiver marcado.
+                    1) // Mostra o calendário se 'Venda Credito' estiver marcado.
                   Column(
                     children: [
                       buildDatePicker(

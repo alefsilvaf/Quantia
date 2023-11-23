@@ -9,18 +9,18 @@ class PaySalesScreen extends StatefulWidget {
 }
 
 class _PaySalesScreenState extends State<PaySalesScreen> {
-  List<Sale> _salesFiado = [];
+  List<Sale> _salesCredito = [];
 
   @override
   void initState() {
     super.initState();
-    _loadSalesFiado();
+    _loadSalesCredito();
   }
 
-  Future<void> _loadSalesFiado() async {
-    final salesFiado = await SaleDatabase.instance.getSalesFiado();
+  Future<void> _loadSalesCredito() async {
+    final salesCredito = await SaleDatabase.instance.getSalesCredito();
     setState(() {
-      _salesFiado = salesFiado.map((saleMap) {
+      _salesCredito = salesCredito.map((saleMap) {
         final sale = Sale.fromMapWithTotalPrice(saleMap);
         return sale;
       }).toList();
@@ -35,7 +35,7 @@ class _PaySalesScreenState extends State<PaySalesScreen> {
     await SaleDatabase.instance.updateSale(sale.toMapWithoutCustomerName());
 
     // Recarregue as vendas fiado após a atualização para refletir as alterações na tela
-    _loadSalesFiado();
+    _loadSalesCredito();
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -56,13 +56,13 @@ class _PaySalesScreenState extends State<PaySalesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Baixas em Vendas Fiado')),
-      body: _salesFiado.isEmpty
-          ? Center(child: Text('Nenhuma venda fiado encontrada.'))
+      appBar: AppBar(title: Text('Baixas em Vendas a Crédito')),
+      body: _salesCredito.isEmpty
+          ? Center(child: Text('Nenhuma venda a crédito encontrada.'))
           : ListView.builder(
-              itemCount: _salesFiado.length,
+              itemCount: _salesCredito.length,
               itemBuilder: (context, index) {
-                final sale = _salesFiado[index];
+                final sale = _salesCredito[index];
                 final daysDifference =
                     sale.dueDate!.difference(DateTime.now()).inDays;
                 final isOverdue = daysDifference < 0;
@@ -101,7 +101,7 @@ class _PaySalesScreenState extends State<PaySalesScreen> {
                                 onPressed: () async {
                                   await _markSaleAsPaid(sale);
                                   Navigator.pop(context);
-                                  _loadSalesFiado();
+                                  _loadSalesCredito();
                                 },
                                 child: Text('Sim'),
                               ),

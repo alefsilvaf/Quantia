@@ -30,22 +30,22 @@ class ReportsMenuScreen extends StatelessWidget {
               rota: CashFlowReportScreen(),
             ),
           ),
-          Expanded(
-            child: FuncionalidadeCard(
-              titulo: 'Produtos Mais Vendidos',
-              icone: Icons.trending_up,
-              cor: customColor,
-              rota: ControleGeralScreen(),
-            ),
-          ),
-          Expanded(
-            child: FuncionalidadeCard(
-              titulo: 'Clientes que Mais Compraram',
-              icone: Icons.shopping_cart,
-              cor: customColor,
-              rota: ControleGeralScreen(),
-            ),
-          ),
+          // Expanded(
+          //   child: FuncionalidadeCard(
+          //     titulo: 'Produtos Mais Vendidos',
+          //     icone: Icons.trending_up,
+          //     cor: customColor,
+          //     rota: ControleGeralScreen(),
+          //   ),
+          // ),
+          // Expanded(
+          //   child: FuncionalidadeCard(
+          //     titulo: 'Clientes que Mais Compraram',
+          //     icone: Icons.shopping_cart,
+          //     cor: customColor,
+          //     rota: ControleGeralScreen(),
+          //   ),
+          // ),
         ],
       ),
     );
