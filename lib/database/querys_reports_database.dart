@@ -48,4 +48,43 @@ class QueryReportDatabase {
       return [];
     }
   }
+
+  Future<List<Map<String, dynamic>>> getTopSellingProducts(
+      {DateTime? startDate, DateTime? endDate}) async {
+    try {
+      final db = await DatabaseHelper.instance.database;
+      final StringBuffer queryBuffer = StringBuffer('''
+      SELECT
+        P.name AS product_name,
+        SUM(SI.quantity) AS total_sold,
+        AVG(P.price) AS average_price,
+        SUM(SI.quantity * P.price) AS total_revenue
+      FROM sales S
+      INNER JOIN sale_items SI ON SI.sale_id = S.id
+      INNER JOIN products P ON P.id = SI.product_id
+      WHERE 0 = 0
+      ''');
+
+      if (startDate != null && endDate != null) {
+        DateTime adjustedStartDate =
+            DateTime(startDate.year, startDate.month, startDate.day, 0, 0, 0);
+
+        DateTime adjustedEndDate =
+            DateTime(endDate.year, endDate.month, endDate.day, 23, 59, 59);
+
+        queryBuffer.write('''
+        AND S.sale_date BETWEEN '${adjustedStartDate.toIso8601String()}' AND '${adjustedEndDate.toIso8601String()}'
+      ''');
+      }
+
+      queryBuffer.write('GROUP BY P.id, P.name ORDER BY total_sold DESC');
+
+      final String query = queryBuffer.toString();
+
+      return await db.rawQuery(query);
+    } catch (e) {
+      print('Erro ao obter relatório de produtos mais vendidos: $e');
+      return [];
+    }
+  }
 }
