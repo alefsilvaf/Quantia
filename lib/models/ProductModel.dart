@@ -1,4 +1,22 @@
+extension ProductModelExtension on ProductModel {
+  // Getter para quantityInSale
+  int get quantityInSale => _quantityInSale;
+
+  // Setter para quantityInSale
+  set quantityInSale(int value) {
+    if (value >= 0) {
+      // Modifica apenas _quantityInSale, sem afetar quantity
+      _quantityInSale = value;
+    } else {
+      // Impede valores negativos
+      _quantityInSale = 0;
+    }
+  }
+}
+
 class ProductModel {
+  int _quantityInSale = 0;
+
   int id;
   String name;
   String? description;
@@ -29,7 +47,7 @@ class ProductModel {
       'price': price,
       if (categoryId != null) 'category_id': categoryId,
       if (categoryName != null) 'category_name': categoryName,
-      'quantity': quantity,
+      'quantity': quantity, // Mantenha quantity como está
       if (supplierId != null) 'supplier_id': supplierId,
       if (supplierName != null) 'supplier_name': supplierName,
     };

@@ -89,4 +89,13 @@ class ProductDatabase {
       searchTermPattern
     ]);
   }
+
+  Future<void> updateProductQuantity(int productId, int newQuantity) async {
+    final db = await DatabaseHelper.instance.database;
+
+    await db.rawUpdate(
+      'UPDATE $tableName SET quantity = ? WHERE id = ?',
+      [newQuantity, productId],
+    );
+  }
 }
