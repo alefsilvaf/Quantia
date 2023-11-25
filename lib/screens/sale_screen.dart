@@ -45,7 +45,8 @@ class _SaleScreenState extends State<SaleScreen> {
 
   void updateSelectedProducts() {
     selectedProducts.clear();
-    selectedProducts.addAll(products.where((product) => product.quantity > 0));
+    selectedProducts
+        .addAll(products.where((product) => product.quantityInSale > 0));
   }
 
   Future<void> initializeCustomers() async {
@@ -54,9 +55,7 @@ class _SaleScreenState extends State<SaleScreen> {
 
   Future<List<ProductModel>> loadProducts() async {
     final productData = await ProductDatabase.instance.getProducts();
-    return productData
-        .map((product) => ProductModel.fromMapWithoutQuantity(product))
-        .toList();
+    return productData.map((product) => ProductModel.fromMap(product)).toList();
   }
 
   Future<List<CustomerModel>> loadCustomers() async {
@@ -69,7 +68,7 @@ class _SaleScreenState extends State<SaleScreen> {
   double getTotal() {
     double total = 0.0;
     for (final product in products) {
-      total += product.price * product.quantity;
+      total += product.price * product.quantityInSale;
     }
     return total;
   }
@@ -164,7 +163,7 @@ class _SaleScreenState extends State<SaleScreen> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Text(
-                'Total: R\$${(product.price * product.quantity).toStringAsFixed(2)}',
+                'Total: R\$${(product.price * product.quantityInSale).toStringAsFixed(2)}',
                 style: TextStyle(fontStyle: FontStyle.italic),
               ),
             ],
@@ -205,18 +204,18 @@ class _SaleScreenState extends State<SaleScreen> {
           icon: Icon(Icons.remove),
           onPressed: () {
             setState(() {
-              if (product.quantity > 0) {
-                product.quantity--;
+              if (product.quantityInSale > 0) {
+                product.quantityInSale--;
               }
             });
           },
         ),
-        Text(product.quantity.toString()),
+        Text(product.quantityInSale.toString()),
         IconButton(
           icon: Icon(Icons.add),
           onPressed: () {
             setState(() {
-              product.quantity++;
+              product.quantityInSale++;
               updateSelectedProducts();
             });
           },
@@ -313,7 +312,7 @@ class _SaleScreenState extends State<SaleScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Venda Fiado'),
+                    Text('Venda a Crédito'),
                     Checkbox(
                       value: isCredit == 0 ? false : true,
                       onChanged: (value) {
@@ -325,7 +324,7 @@ class _SaleScreenState extends State<SaleScreen> {
                   ],
                 ),
                 if (isCredit ==
-                    1) // Mostra o calendário se 'Venda Fiado' estiver marcado.
+                    1) // Mostra o calendário se 'Venda Credito' estiver marcado.
                   Column(
                     children: [
                       buildDatePicker(
@@ -372,6 +371,25 @@ class _SaleScreenState extends State<SaleScreen> {
                           );
                         },
                       );
+                    } else if (!hasEnoughQuantity()) {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text('Aviso'),
+                            content: Text(
+                                'Quantidade insuficiente para um ou mais produtos.'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('OK'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
                     } else {
                       double totalSalePrice = getTotal();
 
@@ -397,6 +415,9 @@ class _SaleScreenState extends State<SaleScreen> {
 
                         await SaleDatabase.instance
                             .insertSaleItem(saleItem.toMap());
+                        await ProductDatabase.instance.updateProductQuantity(
+                            product.id,
+                            (product.quantity - product.quantityInSale));
                       }
 
                       selectedProducts.clear();
@@ -459,5 +480,28 @@ class _SaleScreenState extends State<SaleScreen> {
       },
       child: Text('Selecionar Data de Pagamento Prevista'),
     );
+  }
+
+  bool hasEnoughQuantity() {
+    for (final product in selectedProducts) {
+      if (product.quantityInSale <= 0) {
+        continue; // Ignora produtos com quantidade zero
+      }
+
+      // Procura o produto na lista original para obter a quantidade disponível
+      final originalProduct = products.firstWhere(
+        (original) => original.id == product.id,
+        orElse: () => ProductModel(
+            id: -1,
+            name: product.name,
+            price: product.price,
+            quantity: 0), // Retorna um produto fictício se não encontrar
+      );
+
+      if (originalProduct.quantityInSale > product.quantity) {
+        return false; // Retorna falso se a quantidade disponível for insuficiente
+      }
+    }
+    return true;
   }
 }

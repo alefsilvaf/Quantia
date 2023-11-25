@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../general_control_screen.dart';
 import 'cash_flow_screen.dart';
 import 'due_sales_screens.dart';
+import 'top_selling_products_screen.dart';
 
 class ReportsMenuScreen extends StatelessWidget {
   @override
@@ -35,17 +36,17 @@ class ReportsMenuScreen extends StatelessWidget {
               titulo: 'Produtos Mais Vendidos',
               icone: Icons.trending_up,
               cor: customColor,
-              rota: ControleGeralScreen(),
+              rota: TopSellingProductsReportScreen(),
             ),
           ),
-          Expanded(
-            child: FuncionalidadeCard(
-              titulo: 'Clientes que Mais Compraram',
-              icone: Icons.shopping_cart,
-              cor: customColor,
-              rota: ControleGeralScreen(),
-            ),
-          ),
+          // Expanded(
+          //   child: FuncionalidadeCard(
+          //     titulo: 'Clientes que Mais Compraram',
+          //     icone: Icons.shopping_cart,
+          //     cor: customColor,
+          //     rota: ControleGeralScreen(),
+          //   ),
+          // ),
         ],
       ),
     );

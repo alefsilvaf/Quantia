@@ -109,7 +109,7 @@ class SaleDatabase {
     return result.isNotEmpty ? result.first['customer_name'].toString() : '';
   }
 
-  Future<List<Map<String, dynamic>>> getSalesFiado() async {
+  Future<List<Map<String, dynamic>>> getSalesCredito() async {
     final db = await DatabaseHelper.instance.database;
     return await db.rawQuery('''
     SELECT sales.*, customers.name AS customer_name

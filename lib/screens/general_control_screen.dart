@@ -36,7 +36,7 @@ class ControleGeralScreen extends StatelessWidget {
               rota: SaleScreen(),
             ),
             FuncionalidadeQuadro(
-              titulo: 'Baixa em Venda Fiado',
+              titulo: 'Baixa em Venda a Crédito',
               icone: Icons.payment,
               cor: customColor,
               rota: PaySalesScreen(),
@@ -54,7 +54,7 @@ class ControleGeralScreen extends StatelessWidget {
               rota: ProductListScreen(),
             ),
             FuncionalidadeQuadro(
-              titulo: 'Saída de Produtos',
+              titulo: 'Entrada/Saída de Produtos',
               icone: Icons.outbond,
               cor: customColor,
               rota: ProductOutputScreen(),
