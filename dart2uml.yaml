@@ -1,5 +1,0 @@
-# dart2uml.yaml
-
-directories:
-  - lib
-output: uml/
