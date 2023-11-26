@@ -1,0 +1,25 @@
+name: Generate UML Diagrams
+
+on:
+  push:
+    branches:
+      - main  # ou a branch que você está usando
+
+jobs:
+  generate-uml:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Setup Dart
+      uses: subosito/dart@v2
+      with:
+        sdk: 'stable'
+
+    - name: Install Dart2UML
+      run: dart pub global activate dart2uml
+
+    - name: Generate UML Diagrams
+      run: dart2uml -c dart2uml.yaml
