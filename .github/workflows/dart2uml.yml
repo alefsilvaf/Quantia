@@ -13,13 +13,16 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Setup Dart
-      uses: subosito/dart@v2
+    - name: Setup Dart SDK
+      uses: dart-lang/setup-dart@v2
       with:
-        sdk: 'stable'
+        sdk: stable
 
     - name: Install Dart2UML
       run: dart pub global activate dart2uml
+
+    - name: Add Dart2UML to PATH
+      run: echo "::add-path::$HOME/.pub-cache/bin"
 
     - name: Generate UML Diagrams
       run: dart2uml -c dart2uml.yaml
