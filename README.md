@@ -1,16 +1,40 @@
-# projeto_tcc
+# Quantia
 
-A new Flutter project.
+## Descrição
 
-## Getting Started
+O **Quantia** é um aplicativo desenvolvido em Flutter destinado a auxiliar MEIs(Micro Empreendedor Individual) e ME(Micro Empresas) na gestão de dados de estoque e financeiro, ajudando-os a monitorar e controlar seus gastos e receitas. Com uma interface amigável e diversas funcionalidades, o Quantia se apresenta como um PMV(Produto Mínimo Viável) de aplicativo móvel para usuários que buscam uma maneira eficaz e simples de gerenciar seus dados de estoque, clientes e vendas.
 
-This project is a starting point for a Flutter application.
+## Funcionalidades Principais
 
-A few resources to get you started if this is your first Flutter project:
+### 1. Autenticação de Usuário
+- Login
+- Cadastro de Usuário
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### 2. Controle de Dados de Clientes e Fornecedores
+- Cadastro e visualização de dados de clientes
+- Cadastro e visualização de dados de fornecedores
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### 3. Análise e Relatórios
+- Geração de relatório sobre entrada/saída de caixa
+- Geração de relatório sobre produtos
+- Geração de relatório sobre clientes em dívida
+
+### 4. Cadastro de Produtos e Categoria de Produtos
+- Vínculo de produtos cadastrados com suas respectivas categorias para especificação de tipos de produtos
+
+### 5. Venda de Produtos
+- Venda à vista
+- Venda à crédtio
+- Venda de múltiplos produtos
+
+### 6. Controle de Clientes Devedores
+- Baixa e lançamento de dívidas de clientes
+- Botão de redirecionamento para WhatsApp
+
+## Capturas de Tela
+<img src="[https://exemplo.com/logo.png](https://drive.google.com/file/d/1rC4Ar5xJmSxfWyrV64LaQjNaItJxYEDa/view?usp=sharing)" alt="Telas do MVP">
+
+
+## Licença
+
+Este projeto está licenciado sob a [Licença, por exemplo: MIT] - consulte o arquivo [LICENSE.md](LICENSE.md) para obter mais detalhes.
