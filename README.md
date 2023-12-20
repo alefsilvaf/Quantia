@@ -32,7 +32,7 @@ O **Quantia** é um aplicativo desenvolvido em Flutter destinado a auxiliar MEIs
 - Botão de redirecionamento para WhatsApp
 
 ## Capturas de Tela
-<img src="https://imgur.com/a/ZzCKaYS" alt="Telas do MVP">
+<img src="https://github.com/alefsilvaf/Quantia/blob/main/Principais%20Telas.png" alt="Telas do MVP">
 
 
 ## Licença
