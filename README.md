@@ -33,8 +33,3 @@ O **Quantia** é um aplicativo desenvolvido em Flutter destinado a auxiliar MEIs
 
 ## Capturas de Tela
 <img src="https://github.com/alefsilvaf/Quantia/blob/main/Principais%20Telas.png" alt="Telas do MVP">
-
-
-## Licença
-
-Este projeto está licenciado sob a [Licença, por exemplo: MIT] - consulte o arquivo [LICENSE.md](LICENSE.md) para obter mais detalhes.
