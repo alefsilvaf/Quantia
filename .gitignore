@@ -10,3 +10,21 @@
 .metadata
 *.iml
 *.lock
+
+# Build outputs
+build/
+**/build/
+
+# Android/ iOS / Linux / macOS / Windows / Web gerados
+# Remova se você não tiver código nativo customizado
+android/
+ios/
+linux/
+macos/
+windows/
+web/
+
+# Imagens e assets temporários
+*.log
+*.tmp
+*.swp
